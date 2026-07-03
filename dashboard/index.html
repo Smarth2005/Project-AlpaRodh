@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="AlpaRodh — AI-Driven Variable Resistance Reduction for India's Supercomputers. Analyzing HPC energy optimization using the PM100 dataset mapped to PARAM Yuva-II at CDAC Pune.">
+    <title>अल्परोध AlpaRodh — Minimal Resistance | HPC Energy Optimization</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- ═══ HERO SECTION ═══ -->
+    <header id="hero" class="hero">
+        <div class="hero-bg-grid"></div>
+        <div class="hero-content">
+            <div class="hero-badge">AI FOR ENERGY SAVING</div>
+            <h1 class="hero-title">
+                <span class="hindi-text">अल्परोध</span>
+                <span class="latin-text">AlpaRodh</span>
+            </h1>
+            <p class="hero-subtitle">Minimal Resistance</p>
+            <p class="hero-tagline">AI-Driven Variable Resistance Reduction for India's Supercomputers</p>
+            <div class="hero-chips">
+                <span class="chip chip-cyan">PARAM Yuva-II</span>
+                <span class="chip chip-amber">CDAC Pune</span>
+                <span class="chip chip-coral">PM100 Dataset</span>
+            </div>
+        </div>
+        <div class="scroll-indicator">
+            <span>Scroll to explore</span>
+            <div class="scroll-arrow"></div>
+        </div>
+    </header>
+
+    <!-- ═══ OVERVIEW CARDS ═══ -->
+    <section id="overview" class="section">
+        <h2 class="section-title">System Overview</h2>
+        <p class="section-desc">Real-time metrics from AlpaRodh's analysis of 231,238 HPC job telemetry records</p>
+        <div class="cards-grid">
+            <div class="card glass-card" data-animate>
+                <div class="card-icon">⚡</div>
+                <div class="card-value" id="stat-baseline">0</div>
+                <div class="card-unit">kWh</div>
+                <div class="card-label">Baseline Energy</div>
+            </div>
+            <div class="card glass-card" data-animate>
+                <div class="card-icon">📉</div>
+                <div class="card-value" id="stat-savings">0</div>
+                <div class="card-unit">kWh Saved</div>
+                <div class="card-label">AlpaRodh Optimized</div>
+            </div>
+            <div class="card glass-card" data-animate>
+                <div class="card-icon">🌿</div>
+                <div class="card-value" id="stat-co2">0</div>
+                <div class="card-unit">kg CO₂</div>
+                <div class="card-label">Emissions Prevented</div>
+            </div>
+            <div class="card glass-card" data-animate>
+                <div class="card-icon">📈</div>
+                <div class="card-value" id="stat-eta">0</div>
+                <div class="card-unit">gCO₂/kWh</div>
+                <div class="card-label">AlpaRodh Coefficient (ηα)</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══ ENERGY COMPARISON ═══ -->
+    <section id="energy" class="section section-dark">
+        <h2 class="section-title">Energy Optimization Impact</h2>
+        <p class="section-desc">Variable resistance reduction through Core-Park, DVFS, and Job Consolidation strategies</p>
+        <div class="chart-container">
+            <div class="chart-wrapper">
+                <canvas id="energyChart"></canvas>
+            </div>
+            <div class="chart-sidebar">
+                <div class="strategy-card">
+                    <h3>🅿️ Core-Park</h3>
+                    <p>Power-gate idle cores in over-allocated jobs</p>
+                    <div class="strategy-stat" id="strat-corepark">0 kWh</div>
+                </div>
+                <div class="strategy-card">
+                    <h3>🔄 DVFS</h3>
+                    <p>Reduce frequency for memory-bound workloads</p>
+                    <div class="strategy-stat" id="strat-dvfs">0 kWh</div>
+                </div>
+                <div class="strategy-card">
+                    <h3>📦 Consolidation</h3>
+                    <p>Bin-pack jobs onto fewer active nodes</p>
+                    <div class="strategy-stat" id="strat-consol">0 kWh</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══ AI PREDICTOR ═══ -->
+    <section id="ai" class="section">
+        <h2 class="section-title">🧠 AI Prediction Engine</h2>
+        <p class="section-desc">Machine learning models trained to predict energy waste BEFORE jobs execute</p>
+        <div class="ai-grid">
+            <div class="ai-card glass-card" data-animate>
+                <h3>Waste Classifier</h3>
+                <p class="ai-model-type">Random Forest</p>
+                <div class="ai-metrics">
+                    <div class="ai-metric">
+                        <span class="ai-metric-label">Accuracy</span>
+                        <span class="ai-metric-value" id="ai-accuracy">0%</span>
+                    </div>
+                    <div class="ai-metric">
+                        <span class="ai-metric-label">Precision</span>
+                        <span class="ai-metric-value" id="ai-precision">0%</span>
+                    </div>
+                    <div class="ai-metric">
+                        <span class="ai-metric-label">Recall</span>
+                        <span class="ai-metric-value" id="ai-recall">0%</span>
+                    </div>
+                    <div class="ai-metric">
+                        <span class="ai-metric-label">F1 Score</span>
+                        <span class="ai-metric-value" id="ai-f1">0%</span>
+                    </div>
+                </div>
+            </div>
+            <div class="ai-card glass-card" data-animate>
+                <h3>Feature Importance</h3>
+                <p class="ai-model-type">What drives energy waste?</p>
+                <div class="chart-wrapper-sm">
+                    <canvas id="featureChart"></canvas>
+                </div>
+            </div>
+            <div class="ai-card glass-card" data-animate>
+                <h3>Energy Predictor</h3>
+                <p class="ai-model-type">Gradient Boosting</p>
+                <div class="ai-metrics">
+                    <div class="ai-metric">
+                        <span class="ai-metric-label">R² Score</span>
+                        <span class="ai-metric-value" id="ai-r2">0</span>
+                    </div>
+                    <div class="ai-metric">
+                        <span class="ai-metric-label">MAE</span>
+                        <span class="ai-metric-value" id="ai-mae">0 Wh</span>
+                    </div>
+                    <div class="ai-metric">
+                        <span class="ai-metric-label">RMSE</span>
+                        <span class="ai-metric-value" id="ai-rmse">0 Wh</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══ MODEL BENCHMARKING ═══ -->
+    <section id="benchmarking" class="section section-dark">
+        <h2 class="section-title">📊 12-Model Benchmarking</h2>
+        <p class="section-desc">Multi-criteria TOPSIS evaluation of all evaluated AI models</p>
+        <div class="carbon-grid">
+            <div class="carbon-chart-card glass-card" data-animate style="grid-column: 1 / -1;">
+                <h3>Classifiers Shootout (F1 & Accuracy)</h3>
+                <div class="chart-wrapper-sm" style="min-height: 300px;">
+                    <canvas id="classifierChart"></canvas>
+                </div>
+            </div>
+            <div class="carbon-chart-card glass-card" data-animate style="grid-column: 1 / -1;">
+                <h3>Regressors Shootout (R² & MAE)</h3>
+                <div class="chart-wrapper-sm" style="min-height: 300px;">
+                    <canvas id="regressorChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══ LIVE PREDICTOR ═══ -->
+    <section id="predictor" class="section">
+        <h2 class="section-title">⚡ Live AI Predictor</h2>
+        <p class="section-desc">Test the deployed FastAPI models with real-time telemetry</p>
+        <div class="glass-card">
+            <form id="live-predictor-form" class="predictor-form">
+                <div class="form-group">
+                    <label>Node Power (W)</label>
+                    <input type="number" id="inp-node-pwr" value="300" step="0.1">
+                </div>
+                <div class="form-group">
+                    <label>CPU Power (W)</label>
+                    <input type="number" id="inp-cpu-pwr" value="150" step="0.1">
+                </div>
+                <div class="form-group">
+                    <label>Memory Power (W)</label>
+                    <input type="number" id="inp-mem-pwr" value="45" step="0.1">
+                </div>
+                <div class="form-group">
+                    <label>Requested Cores</label>
+                    <input type="number" id="inp-req-cores" value="16">
+                </div>
+                <div class="form-group">
+                    <label>Allocated Cores</label>
+                    <input type="number" id="inp-alloc-cores" value="32">
+                </div>
+                <div class="form-group">
+                    <label>Run Time (s)</label>
+                    <input type="number" id="inp-runtime" value="3600">
+                </div>
+            </form>
+            <div class="predictor-actions">
+                <button class="btn-predict" id="btn-predict-energy">Predict Energy (Wh)</button>
+                <button class="btn-predict" id="btn-predict-waste">Predict Waste</button>
+                <button class="btn-download" id="btn-download-pdf" style="margin-left: 1rem; background: var(--cyan); color: #000; font-weight: 600;">📥 Download PDF Report</button>
+            </div>
+            <div class="predictor-result" id="predictor-result">
+                <p style="color: var(--text-muted)">Enter telemetry and click a predict button to fetch live API results.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══ PARAM YUVA-II MAPPING ═══ -->
+    <section id="param" class="section section-dark">
+        <h2 class="section-title">🇮🇳 PARAM Yuva-II Projection</h2>
+        <p class="section-desc">Mapping PM100 (Marconi100) results to India's PARAM Yuva-II at CDAC Pune</p>
+        <div class="param-grid">
+            <div class="param-card glass-card" data-animate>
+                <h3>Marconi100 (PM100)</h3>
+                <div class="param-spec">IBM POWER9 + NVIDIA V100</div>
+                <div class="param-spec">980 nodes • 32 PFlops</div>
+                <div class="param-spec">📍 CINECA, Bologna, Italy</div>
+                <div class="param-energy" id="pm100-energy">0 kWh</div>
+            </div>
+            <div class="param-arrow">→</div>
+            <div class="param-card glass-card param-target" data-animate>
+                <h3>PARAM Yuva-II</h3>
+                <div class="param-spec">Intel Xeon E5-2670/2650 + Tesla M2090</div>
+                <div class="param-spec">376 nodes • 524 TFlops</div>
+                <div class="param-spec">📍 CDAC, Pune, India</div>
+                <div class="param-energy" id="param-energy">0 kWh</div>
+            </div>
+        </div>
+        <div class="india-impact-box glass-card" data-animate>
+            <h3>🌏 India Impact Factor</h3>
+            <p>India's power grid is <strong id="india-multiplier">3.13</strong>x more carbon-intensive than Italy's</p>
+            <p>Same savings → <strong id="india-co2">0</strong> kg CO₂ prevented on Indian grid</p>
+        </div>
+    </section>
+
+    <!-- ═══ CARBON FOOTPRINT ═══ -->
+    <section id="carbon" class="section">
+        <h2 class="section-title">🌿 Carbon Footprint Dashboard</h2>
+        <p class="section-desc">Environmental impact analysis with Green Score grading system</p>
+        <div class="carbon-grid">
+            <div class="carbon-chart-card glass-card" data-animate>
+                <h3>Green Score Distribution</h3>
+                <div class="chart-wrapper-sm">
+                    <canvas id="greenScoreChart"></canvas>
+                </div>
+            </div>
+            <div class="carbon-chart-card glass-card" data-animate>
+                <h3>India vs Italy Emissions</h3>
+                <div class="chart-wrapper-sm">
+                    <canvas id="comparisonChart"></canvas>
+                </div>
+            </div>
+            <div class="carbon-equiv-card glass-card" data-animate>
+                <h3>Real-World Equivalences</h3>
+                <div class="equiv-items">
+                    <div class="equiv-item">
+                        <span class="equiv-icon">🌳</span>
+                        <span class="equiv-value" id="equiv-trees">0</span>
+                        <span class="equiv-label">Trees planted/year</span>
+                    </div>
+                    <div class="equiv-item">
+                        <span class="equiv-icon">🚗</span>
+                        <span class="equiv-value" id="equiv-driving">0</span>
+                        <span class="equiv-label">km driving avoided</span>
+                    </div>
+                    <div class="equiv-item">
+                        <span class="equiv-icon">📱</span>
+                        <span class="equiv-value" id="equiv-phones">0</span>
+                        <span class="equiv-label">Phone charges saved</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══ MULTILINGUAL EXPLAINER ═══ -->
+    <section id="translate" class="section section-dark">
+        <h2 class="section-title">🌐 Multilingual Explainer</h2>
+        <p class="section-desc">Technical analysis translated into layman language</p>
+        <div class="lang-selector">
+            <button class="lang-btn active" data-lang="en" id="lang-en">English</button>
+            <button class="lang-btn" data-lang="hi" id="lang-hi">हिंदी</button>
+            <button class="lang-btn" data-lang="mr" id="lang-mr">मराठी</button>
+        </div>
+        <div class="explain-grid" id="explain-grid">
+            <!-- Dynamically populated by app.js -->
+        </div>
+    </section>
+
+    <!-- ═══ FOOTER ═══ -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <span class="footer-hindi">अल्परोध</span> AlpaRodh v1.0
+            </div>
+            <div class="footer-info">
+                AI-Driven Variable Resistance Reduction for India's Supercomputers<br>
+                Dataset: PM100 (Marconi100) • Target: PARAM Yuva-II, CDAC Pune
+            </div>
+            <div class="footer-theme">Theme: AI for Energy Saving</div>
+        </div>
+    </footer>
+
+    <!-- Hidden Template for PDF Generation -->
+    <div id="pdf-report-template" style="position: absolute; left: 0; top: 0; width: 800px; padding: 40px; font-family: 'Inter', sans-serif; color: #1e293b; background: white; z-index: -9999; pointer-events: none;">
+        <div style="border-bottom: 2px solid #00f5d4; padding-bottom: 20px; margin-bottom: 30px;">
+            <h1 style="margin: 0; color: #0f172a; font-size: 28px;">अल्परोध AlpaRodh</h1>
+            <p style="margin: 5px 0 0 0; color: #64748b; font-size: 14px;">AI-Driven Variable Resistance Reduction Report</p>
+        </div>
+        
+        <h2 style="color: #0f172a; font-size: 18px; margin-bottom: 15px;">1. Telemetry Inputs</h2>
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px; font-size: 14px;">
+            <tbody id="pdf-telemetry-body">
+                <!-- Populated by JS -->
+            </tbody>
+        </table>
+
+        <h2 style="color: #0f172a; font-size: 18px; margin-bottom: 15px;">2. AI Prediction Result</h2>
+        <div id="pdf-prediction-result" style="padding: 15px; background: #f8fafc; border-left: 4px solid #00f5d4; margin-bottom: 30px; font-size: 16px; font-weight: 600; color: #0f172a;">
+            <!-- Populated by JS -->
+        </div>
+
+        <h2 style="color: #0f172a; font-size: 18px; margin-bottom: 15px;">3. Concept Explanations</h2>
+        <div id="pdf-explanations" style="font-size: 12px; color: #475569; line-height: 1.6;">
+            <!-- Populated by JS -->
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
