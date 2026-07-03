@@ -207,7 +207,11 @@ document.addEventListener("DOMContentLoaded", async () => {
                 jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
             };
 
-            await window.html2pdf().set(opt).from(template).save();
+            // Clone the template and make it visible for html2pdf
+            const clone = template.cloneNode(true);
+            clone.style.display = "block";
+            
+            await window.html2pdf().set(opt).from(clone).save();
         } catch (err) {
             console.error("PDF generation failed:", err);
             alert("Sorry, the PDF could not be generated: " + err.message);

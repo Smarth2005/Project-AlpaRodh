@@ -52,14 +52,7 @@ class TelemetryData(BaseModel):
     run_time: int
     num_gpus_alloc: Optional[int] = 0
 
-# Mount dashboard static files
-dashboard_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "dashboard")
-if os.path.exists(dashboard_dir):
-    app.mount("/", StaticFiles(directory=dashboard_dir, html=True), name="dashboard")
-else:
-    @app.get("/")
-    def read_root():
-        return {"status": "ok", "message": "AlpaRodh API is running. Dashboard not found."}
+
 
 @app.post("/api/predict/energy")
 def predict_energy(data: TelemetryData):
@@ -128,3 +121,12 @@ def predict_waste(data: TelemetryData):
     prediction = waste_classifier.predict(scaled_features)[0]
     
     return {"is_wasteful": int(prediction)}
+
+# Mount dashboard static files (Must be at the end to avoid swallowing API routes)
+dashboard_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "dashboard")
+if os.path.exists(dashboard_dir):
+    app.mount("/", StaticFiles(directory=dashboard_dir, html=True), name="dashboard")
+else:
+    @app.get("/")
+    def read_root():
+        return {"status": "ok", "message": "AlpaRodh API is running. Dashboard not found."}
