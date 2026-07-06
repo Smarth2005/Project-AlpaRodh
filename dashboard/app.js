@@ -882,10 +882,10 @@ function buildJobAnalysisReport(inp, energyWh, isWasteful) {
     "<h2 style='" + H2 + "'>&#x1F33F; " + T.section_carbon + "</h2>" +
     "<table style='width:100%;border-collapse:collapse;margin-bottom:14px;'><tr>" +
     "<td style='width:30%;vertical-align:top;padding-right:8px;'>" +
-    "<div style='" + CARD + "text-align:center;border-top:5px solid " + gradeColor + ";'>" +
-    "<p style='font-size:11px;color:#64748b;margin:0 0 4px 0;text-transform:uppercase;letter-spacing:1px;'>Green Score</p>" +
-    "<p style='font-size:52px;font-weight:900;color:" + gradeColor + ";margin:0;'>" + grade + "</p>" +
-    "<p style='font-size:12px;font-weight:600;color:" + gradeColor + ";margin:2px 0 0 0;'>" + gradeText + "</p>" +
+    "<div style='background:" + gradeColor + ";border-radius:8px;padding:14px;margin-bottom:12px;text-align:center;'>" +
+    "<p style='font-size:11px;color:rgba(255,255,255,0.75);margin:0 0 4px 0;text-transform:uppercase;letter-spacing:1px;font-weight:600;'>Green Score</p>" +
+    "<p style='font-size:64px;font-weight:900;color:#ffffff;margin:0;line-height:1;text-shadow:0 2px 8px rgba(0,0,0,0.25);'>" + grade + "</p>" +
+    "<p style='font-size:12px;font-weight:700;color:rgba(255,255,255,0.9);margin:6px 0 0 0;letter-spacing:0.5px;'>" + gradeText + "</p>" +
     "</div></td>" +
     "<td style='width:3%;'></td>" +
     "<td style='width:67%;vertical-align:top;'>" +
