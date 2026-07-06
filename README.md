@@ -8,13 +8,13 @@
 
 <br/>
 
-[![Typing SVG](https://readme-typing-svg.herokuapp.com?font=Inter&weight=600&size=20&pause=1000&color=06D6A0&center=true&vCenter=true&width=600&lines=AI-Driven+Variable+Resistance+Reduction;Optimizing+India's+PARAM+Yuva-II;Translating+Compute+Waste+into+Green+Scores)](https://git.io/typing-svg)
+[![Typing SVG](https://readme-typing-svg.herokuapp.com?font=Inter&weight=600&size=20&pause=1000&color=047857&center=true&vCenter=true&width=600&lines=AI-Driven+Variable+Resistance+Reduction;Optimizing+India's+PARAM+Yuva-II;Translating+Compute+Waste+into+Green+Scores)](https://git.io/typing-svg)
 
-[![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.104%2B-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
-[![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://docker.com)
-[![License](https://img.shields.io/badge/License-MIT-00F5D4?style=for-the-badge)](LICENSE)
-[![CI](https://img.shields.io/github/actions/workflow/status/Smarth2005/Project-AlpaRodh/python-app.yml?style=for-the-badge&label=CI&logo=github-actions)](https://github.com/Smarth2005/Project-AlpaRodh/actions)
+[![Python](https://img.shields.io/badge/Python-3.10%2B-06D6A0?style=for-the-badge&logo=python&logoColor=white&labelColor=0A0E1A)](https://python.org)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.104%2B-06D6A0?style=for-the-badge&logo=fastapi&logoColor=white&labelColor=0A0E1A)](https://fastapi.tiangolo.com)
+[![Docker](https://img.shields.io/badge/Docker-Ready-06D6A0?style=for-the-badge&logo=docker&logoColor=white&labelColor=0A0E1A)](https://docker.com)
+[![License](https://img.shields.io/badge/License-MIT-06D6A0?style=for-the-badge&labelColor=0A0E1A)](LICENSE)
+[![CI](https://img.shields.io/github/actions/workflow/status/Smarth2005/Project-AlpaRodh/python-app.yml?style=for-the-badge&label=CI&logo=github-actions&color=06D6A0&labelColor=0A0E1A)](https://github.com/Smarth2005/Project-AlpaRodh/actions)
 
 <br/>
 
