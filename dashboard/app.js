@@ -183,7 +183,16 @@ document.addEventListener("DOMContentLoaded", async () => {
         const resp = await fetch("data.json");
         if (resp.ok) {
             const loaded = await resp.json();
-            DATA = { ...DEFAULT_DATA, ...loaded };
+            // Deep-merge so data.json never wipes report-specific translation keys
+            const mergedTranslations = {};
+            const langs = new Set([...Object.keys(DEFAULT_DATA.translations), ...Object.keys((loaded.translations || {}))]);
+            for (const lang of langs) {
+                mergedTranslations[lang] = {
+                    ...(DEFAULT_DATA.translations[lang] || {}),
+                    ...((loaded.translations || {})[lang] || {}),
+                };
+            }
+            DATA = { ...DEFAULT_DATA, ...loaded, translations: mergedTranslations };
         }
     } catch (e) {
         console.log("Using embedded default data");
@@ -486,7 +495,27 @@ function renderGreenScoreChart() {
             plugins: {
                 legend: {
                     position: "bottom",
-                    labels: { color: "#94a3b8", font: { family: "Inter", size: 11 }, padding: 12 },
+                    labels: {
+                        color: "#94a3b8",
+                        font: { family: "Inter", size: 11 },
+                        padding: 16,
+                        boxWidth: 14,
+                        boxHeight: 14,
+                        // Wrap into symmetric 2-column grid
+                        generateLabels: (chart) => {
+                            const dataset = chart.data.datasets[0];
+                            return chart.data.labels.map((label, i) => ({
+                                text: label,
+                                fillStyle: dataset.backgroundColor[i],
+                                strokeStyle: dataset.backgroundColor[i],
+                                lineWidth: 0,
+                                hidden: !chart.getDataVisibility(i),
+                                index: i,
+                            }));
+                        },
+                    },
+                    // Max 2 items per row for symmetry
+                    maxWidth: 320,
                 },
             },
         },
