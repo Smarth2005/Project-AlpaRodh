@@ -298,6 +298,22 @@ pytest tests/ -v
 
 ---
 
+## 🔌 API Endpoints
+
+The FastAPI backend exposes the following REST endpoints to serve the dashboard and run real-time ML predictions:
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET`  | `/`      | Redirects to the interactive dashboard (`/dashboard/index.html`). |
+| `GET`  | `/api/health` | Service health check. Returns model loading status & system info. |
+| `GET`  | `/api/data` | Serves the pre-computed PM100 analysis results (`data.json`). |
+| `POST` | `/api/predict/energy` | Accepts a JSON payload of job parameters and returns the predicted `energy_wh`. |
+| `POST` | `/api/predict/waste` | Accepts a JSON payload and classifies if the job is Wasteful (1) or Efficient (0). |
+
+*Both POST endpoints expect a `TelemetryData` JSON payload containing core requests, allocations, and power metrics.*
+
+---
+
 ## 🖥️ Dashboard Features
 
 | Feature | Description |
