@@ -1,0 +1,418 @@
+{
+  "project": {
+    "name": "अल्परोध (AlpaRodh)",
+    "tagline": "AI-Driven Variable Resistance Reduction for India's Supercomputers",
+    "version": "1.0.0"
+  },
+  "baseline": {
+    "total_jobs": 231238,
+    "total_baseline_kwh": 1257.58,
+    "total_variable_kwh": 1249.9,
+    "total_static_kwh": 7.69,
+    "variable_percent": 99.39,
+    "static_floor_w": 0.02,
+    "mean_node_power_w": 2.96,
+    "max_node_power_w": 387.44,
+    "mismatch_count": 34681,
+    "mismatch_percent": 15.0,
+    "over_alloc_count": 34681
+  },
+  "optimization": {
+    "core_park": {
+      "savings_kwh": 37.21,
+      "savings_percent": 2.96
+    },
+    "dvfs": {
+      "savings_kwh": 1.26,
+      "savings_percent": 0.1,
+      "memory_bound_jobs": 52428
+    },
+    "consolidation": {
+      "score": 0.2227,
+      "potential_savings_kwh": 28.01
+    },
+    "combined": {
+      "savings_kwh": 38.23,
+      "savings_percent": 3.04,
+      "optimized_total_kwh": 1219.35
+    }
+  },
+  "ai_models": {
+    "waste_classifier": {
+      "model_type": "XGBoost",
+      "accuracy": 0.9363,
+      "precision": 0.7368,
+      "recall": 0.877,
+      "f1_score": 0.8008,
+      "feature_importances": {
+        "power_per_core": 0.3297,
+        "run_time": 0.1442,
+        "num_gpus_alloc": 0.1393,
+        "cpu_pwr_w": 0.1375,
+        "mem_pwr_w": 0.1036,
+        "node_pwr_w": 0.0634,
+        "mem_to_cpu_ratio": 0.0429,
+        "cpu_to_node_ratio": 0.0393,
+        "log_run_time": 0.0,
+        "has_gpu": 0.0
+      },
+      "top_features": [
+        {
+          "name": "power_per_core",
+          "importance": 0.3297
+        },
+        {
+          "name": "run_time",
+          "importance": 0.1442
+        },
+        {
+          "name": "num_gpus_alloc",
+          "importance": 0.1393
+        },
+        {
+          "name": "cpu_pwr_w",
+          "importance": 0.1375
+        },
+        {
+          "name": "mem_pwr_w",
+          "importance": 0.1036
+        },
+        {
+          "name": "node_pwr_w",
+          "importance": 0.0634
+        },
+        {
+          "name": "mem_to_cpu_ratio",
+          "importance": 0.0429
+        }
+      ],
+      "train_size": 184990,
+      "test_size": 46248
+    },
+    "energy_predictor": {
+      "model_type": "XGBoost",
+      "mae_wh": 0.0772,
+      "rmse_wh": 0.3649,
+      "r2_score": 0.998,
+      "feature_importances": {
+        "run_time": 0.469,
+        "node_pwr_w": 0.4161,
+        "num_cores_alloc": 0.0428,
+        "mem_pwr_w": 0.0327,
+        "num_gpus_alloc": 0.0298,
+        "cpu_pwr_w": 0.0041,
+        "power_per_core": 0.0017,
+        "num_cores_req": 0.0011,
+        "core_mismatch": 0.0011,
+        "cpu_to_node_ratio": 0.0011,
+        "mem_to_cpu_ratio": 0.0004,
+        "mismatch_ratio": 0.0002,
+        "log_run_time": 0.0,
+        "has_gpu": 0.0
+      },
+      "top_features": [
+        {
+          "name": "run_time",
+          "importance": 0.469
+        },
+        {
+          "name": "node_pwr_w",
+          "importance": 0.4161
+        },
+        {
+          "name": "num_cores_alloc",
+          "importance": 0.0428
+        },
+        {
+          "name": "mem_pwr_w",
+          "importance": 0.0327
+        },
+        {
+          "name": "num_gpus_alloc",
+          "importance": 0.0298
+        },
+        {
+          "name": "cpu_pwr_w",
+          "importance": 0.0041
+        },
+        {
+          "name": "power_per_core",
+          "importance": 0.0017
+        }
+      ],
+      "train_size": 183140,
+      "test_size": 45785,
+      "outliers_removed": 2313
+    },
+    "classifier_comparison": [
+      {
+        "Model": "XGBoost",
+        "Accuracy": 0.9363,
+        "Precision": 0.7368,
+        "Recall": 0.877,
+        "F1_Score": 0.8008,
+        "Train_Size": 184990,
+        "Test_Size": 46248,
+        "Training_Time_s": 2.91,
+        "Topsis Score": 0.916,
+        "Rank": 1
+      },
+      {
+        "Model": "Random Forest",
+        "Accuracy": 0.9158,
+        "Precision": 0.6618,
+        "Recall": 0.8655,
+        "F1_Score": 0.7501,
+        "Train_Size": 184990,
+        "Test_Size": 46248,
+        "Training_Time_s": 12.87,
+        "Topsis Score": 0.846,
+        "Rank": 2
+      },
+      {
+        "Model": "MLP (Neural Net)",
+        "Accuracy": 0.9296,
+        "Precision": 0.841,
+        "Recall": 0.6379,
+        "F1_Score": 0.7255,
+        "Train_Size": 184990,
+        "Test_Size": 46248,
+        "Training_Time_s": 47.24,
+        "Topsis Score": 0.668,
+        "Rank": 3
+      },
+      {
+        "Model": "Logistic Regression",
+        "Accuracy": 0.5944,
+        "Precision": 0.21,
+        "Recall": 0.6439,
+        "F1_Score": 0.3167,
+        "Train_Size": 184990,
+        "Test_Size": 46248,
+        "Training_Time_s": 0.52,
+        "Topsis Score": 0.6205,
+        "Rank": 4
+      },
+      {
+        "Model": "SVM (RBF)",
+        "Accuracy": 0.4676,
+        "Precision": 0.1845,
+        "Recall": 0.7745,
+        "F1_Score": 0.2981,
+        "Train_Size": 184990,
+        "Test_Size": 46248,
+        "Training_Time_s": 7.1,
+        "Topsis Score": 0.5942,
+        "Rank": 5
+      },
+      {
+        "Model": "Gradient Boosting",
+        "Accuracy": 0.944,
+        "Precision": 0.8877,
+        "Recall": 0.7059,
+        "F1_Score": 0.7864,
+        "Train_Size": 184990,
+        "Test_Size": 46248,
+        "Training_Time_s": 119.72,
+        "Topsis Score": 0.3885,
+        "Rank": 6
+      }
+    ],
+    "regressor_comparison": [
+      {
+        "Model": "XGBoost",
+        "MAE_Wh": 0.0772,
+        "RMSE_Wh": 0.3649,
+        "R2_Score": 0.998,
+        "Train_Size": 183140,
+        "Test_Size": 45785,
+        "Training_Time_s": 4.38,
+        "Topsis Score": 0.9817,
+        "Rank": 1
+      },
+      {
+        "Model": "MLP (Neural Net)",
+        "MAE_Wh": 0.0602,
+        "RMSE_Wh": 0.2416,
+        "R2_Score": 0.9991,
+        "Train_Size": 183140,
+        "Test_Size": 45785,
+        "Training_Time_s": 56.57,
+        "Topsis Score": 0.8536,
+        "Rank": 2
+      },
+      {
+        "Model": "Gradient Boosting",
+        "MAE_Wh": 0.0659,
+        "RMSE_Wh": 0.2607,
+        "R2_Score": 0.999,
+        "Train_Size": 183140,
+        "Test_Size": 45785,
+        "Training_Time_s": 140.91,
+        "Topsis Score": 0.6809,
+        "Rank": 3
+      },
+      {
+        "Model": "Random Forest",
+        "MAE_Wh": 0.0734,
+        "RMSE_Wh": 0.3421,
+        "R2_Score": 0.9983,
+        "Train_Size": 183140,
+        "Test_Size": 45785,
+        "Training_Time_s": 203.37,
+        "Topsis Score": 0.589,
+        "Rank": 4
+      },
+      {
+        "Model": "SVR (RBF)",
+        "MAE_Wh": 0.8422,
+        "RMSE_Wh": 4.4585,
+        "R2_Score": 0.7029,
+        "Train_Size": 183140,
+        "Test_Size": 45785,
+        "Training_Time_s": 11.56,
+        "Topsis Score": 0.5553,
+        "Rank": 5
+      },
+      {
+        "Model": "Ridge Regression",
+        "MAE_Wh": 1.8048,
+        "RMSE_Wh": 5.4463,
+        "R2_Score": 0.5566,
+        "Train_Size": 183140,
+        "Test_Size": 45785,
+        "Training_Time_s": 0.07,
+        "Topsis Score": 0.408,
+        "Rank": 6
+      }
+    ]
+  },
+  "param_mapping": {
+    "hardware_comparison": {
+      "pm100": {
+        "name": "Marconi100 (PM100)",
+        "location": "CINECA, Bologna, Italy",
+        "cpu": "IBM POWER9",
+        "cpu_tdp": 190,
+        "gpu": "NVIDIA Tesla V100",
+        "gpu_tdp": 300,
+        "node_count": 980,
+        "peak_performance": "32.0 PFlops"
+      },
+      "param_yuva_ii": {
+        "name": "PARAM Yuva-II",
+        "location": "CDAC, Pune, India",
+        "cpu_node_cpu": "Intel Xeon E5-2670",
+        "cpu_node_tdp": 115,
+        "gpu_node_cpu": "Intel Xeon E5-2650",
+        "gpu_node_gpu": "NVIDIA Tesla M2090",
+        "gpu_node_gpu_tdp": 225,
+        "total_cpu_nodes": 340,
+        "total_gpu_nodes": 36,
+        "peak_performance": "524.0 TFlops"
+      }
+    },
+    "mapping_summary": {
+      "scaling_factors": {
+        "cpu_tdp_ratio": 0.6053,
+        "gpu_tdp_ratio": 0.75,
+        "gpu_count_ratio": 0.5,
+        "cpu_node_scale": 0.6053,
+        "gpu_node_scale": 0.4375
+      },
+      "node_types": {
+        "cpu_only": 20665,
+        "gpu_accel": 210573
+      },
+      "pm100_baseline_kwh": 1257.58,
+      "param_baseline_kwh": 577.08,
+      "scale_ratio": 0.4589
+    },
+    "projected_savings": {
+      "param_savings_kwh": 17.54,
+      "co2_saved_india_kg": 12.63,
+      "scale_factor_used": 0.4589
+    }
+  },
+  "carbon": {
+    "baseline": {
+      "co2_italy_kg": 289.24,
+      "co2_india_kg": 905.46
+    },
+    "savings": {
+      "co2_italy_kg": 8.79,
+      "co2_india_kg": 27.53
+    },
+    "alpa_coefficient": 7.0349,
+    "alpa_coefficient_unit": "gCO₂/kWh",
+    "per_job": {
+      "baseline_carbon_g": 1.2509,
+      "optimized_carbon_g": 1.2128,
+      "baseline_grade": "C",
+      "optimized_grade": "C"
+    },
+    "grade_distribution": {
+      "A": 193217,
+      "B": 10715,
+      "D": 10623,
+      "F": 9144,
+      "C": 7539
+    },
+    "india_vs_italy": {
+      "italy": {
+        "co2_factor": 230,
+        "baseline_co2_kg": 289.24,
+        "saved_co2_kg": 8.79
+      },
+      "india": {
+        "co2_factor": 720,
+        "baseline_co2_kg": 905.46,
+        "saved_co2_kg": 27.53
+      },
+      "india_multiplier": 3.13
+    },
+    "equivalences": {
+      "trees_year": 1.25,
+      "driving_km_avoided": 131.1,
+      "phone_charges_equivalent": 3348
+    }
+  },
+  "translations": {
+    "en": {
+      "baseline_energy": "The supercomputer consumed a total of 1257.58 kWh of electricity — enough to power an average Indian home for about 359.3 days.",
+      "variable_resistance": "The 'variable resistance' is the dynamic power a CPU uses during computation. When a job doesn't fully use its allocated cores, these cores still draw power — like an engine running in neutral. AlpaRodh identifies and reduces this waste.",
+      "energy_savings": "AlpaRodh saved 38.23 kWh (3.04%) by intelligently reducing idle power in over-allocated compute nodes — like turning off unused lights in a building.",
+      "core_mismatch": "We found 34681 jobs where the computer allocated more processor cores than the job actually needed — like booking a 100-seat bus for 10 people. The empty seats still consume fuel (electricity).",
+      "carbon_saved": "We prevented 27.53 kg of CO₂ emissions — equivalent to planting 1.2 trees or avoiding 131 km of car driving.",
+      "alpa_coefficient": "The AlpaRodh Coefficient (ηα = 7.0349 gCO₂/kWh) measures how effectively our AI reduces pollution per unit of electricity optimized. A higher value means the AI is better at targeting the most wasteful workloads.",
+      "ai_prediction": "Our AI model can predict wasteful jobs with 93.6% accuracy BEFORE they run — like a smart traffic system that prevents jams before they happen.",
+      "param_mapping": "When applied to India's PARAM Yuva-II supercomputer at CDAC Pune, AlpaRodh could save 17.54 kWh — preventing 12.63 kg of CO₂ on India's carbon-intensive power grid.",
+      "india_impact": "India's power grid is 3.13x more carbon-intensive than Italy's. This means the SAME energy savings in India prevents 3.13x MORE pollution — making AlpaRodh even more impactful for Indian supercomputers.",
+      "green_score": "Each job gets a Green Score from A (most efficient) to F (most wasteful) — like an energy star rating for your appliances, but for supercomputer tasks."
+    },
+    "hi": {
+      "baseline_energy": "सुपरकंप्यूटर ने कुल 1257.58 kWh बिजली खर्च की — यह एक भारतीय घर को लगभग 359.3 दिन चलाने के लिए पर्याप्त है।",
+      "variable_resistance": "'वेरिएबल रेजिस्टेंस' (परिवर्तनीय प्रतिरोध) वह बिजली है जो CPU गणना के दौरान उपयोग करता है। जब कोई कार्य अपने आवंटित कोर का पूरा उपयोग नहीं करता, तो ये कोर फिर भी बिजली खींचते हैं — जैसे कार का इंजन न्यूट्रल में चलना। अल्परोध इस बर्बादी को पहचानता है और कम करता है।",
+      "energy_savings": "अल्परोध ने 38.23 kWh (3.04%) बिजली बचाई — यह ऐसे है जैसे किसी बिल्डिंग में बेकार जलती लाइट्स बंद कर दी जाएं। सुपरकंप्यूटर के जो हिस्से बिना काम के चालू थे, उनकी बिजली कम कर दी गई।",
+      "core_mismatch": "हमने 34681 ऐसे कार्य पाए जहां कंप्यूटर ने जरूरत से ज्यादा प्रोसेसर कोर आवंटित किए — जैसे 10 लोगों के लिए 100 सीट की बस बुक करना। खाली सीटें भी ईंधन (बिजली) खर्च करती हैं।",
+      "carbon_saved": "हमने 27.53 kg CO₂ उत्सर्जन रोका — यह 1.2 पेड़ लगाने या 131 km कार ड्राइविंग बचाने के बराबर है।",
+      "alpa_coefficient": "अल्परोध गुणांक (ηα = 7.0349 gCO₂/kWh) यह मापता है कि हमारा AI प्रति यूनिट बिजली कितना प्रदूषण कम करता है। जितना ऊंचा मान, उतना बेहतर — मतलब AI सबसे फालतू कार्यों को सटीक रूप से पकड़ रहा है।",
+      "ai_prediction": "हमारा AI मॉडल 93.6% सटीकता से बता सकता है कि कौन सा कार्य बिजली बर्बाद करेगा — चलने से पहले! यह ऐसे है जैसे एक स्मार्ट ट्रैफिक सिस्टम जो जाम होने से पहले ही रोक दे।",
+      "param_mapping": "जब अल्परोध को CDAC पुणे के PARAM Yuva-II सुपरकंप्यूटर पर लागू किया जाए, तो 17.54 kWh बिजली बचाई जा सकती है — भारत के कार्बन-सघन बिजली ग्रिड पर 12.63 kg CO₂ रोका जा सकता है।",
+      "india_impact": "भारत का बिजली ग्रिड इटली से 3.13 गुना ज्यादा कार्बन-सघन है। इसका मतलब है कि भारत में वही बिजली बचत 3.13 गुना ज्यादा प्रदूषण रोकती है — अल्परोध भारतीय सुपरकंप्यूटर्स के लिए और भी ज्यादा प्रभावी है।",
+      "green_score": "हर कार्य को A (सबसे कुशल) से F (सबसे फालतू) तक एक ग्रीन स्कोर मिलता है — जैसे आपके उपकरणों की ऊर्जा स्टार रेटिंग, लेकिन सुपरकंप्यूटर के कार्यों के लिए।"
+    },
+    "mr": {
+      "baseline_energy": "सुपरकंप्युटरने एकूण 1257.58 kWh वीज वापरली — हे एका भारतीय घराला सुमारे 359.3 दिवस चालवण्यासाठी पुरेसे आहे।",
+      "variable_resistance": "'व्हेरिएबल रेझिस्टन्स' (बदलणारा प्रतिरोध) म्हणजे CPU गणनेदरम्यान वापरत असलेली वीज. जेव्हा एखादे कार्य त्याच्या वाटप केलेल्या कोअर्सचा पूर्ण वापर करत नाही, तेव्हाही ते कोअर्स वीज वापरतात — जसे कार न्यूट्रलमध्ये चालू असणे. अल्परोध ही नासाडी ओळखतो आणि कमी करतो.",
+      "energy_savings": "अल्परोधने 38.23 kWh (3.04%) वीज वाचवली — जसे एखाद्या इमारतीतील न वापरलेले दिवे बंद करणे. सुपरकंप्युटरचे जे भाग विनाकारण चालू होते, त्यांची वीज कमी केली.",
+      "core_mismatch": "आम्हाला 34681 कामे आढळली जिथे संगणकाने प्रत्यक्ष गरजेपेक्षा जास्त प्रोसेसर कोअर्स दिले — जसे 10 लोकांसाठी 100 आसनांची बस बुक करणे. रिकाम्या जागाही इंधन (वीज) वापरतात.",
+      "carbon_saved": "आम्ही 27.53 kg CO₂ उत्सर्जन रोखले — हे 1.2 झाडे लावण्याइतके किंवा 131 km कार चालवणे टाळण्याइतके आहे.",
+      "alpa_coefficient": "अल्परोध गुणांक (ηα = 7.0349 gCO₂/kWh) हे मोजतो की आमचे AI प्रति युनिट वीज किती प्रदूषण कमी करतो. जितके जास्त मूल्य, तितके चांगले — म्हणजे AI सर्वात जास्त वाया जाणाऱ्या कामांना अचूकपणे ओळखतो.",
+      "ai_prediction": "आमचा AI मॉडेल 93.6% अचूकतेने सांगू शकतो की कोणते काम वीज वाया घालवेल — चालू होण्यापूर्वीच! हे एखाद्या स्मार्ट ट्रॅफिक सिस्टमसारखे आहे जी जाम होण्यापूर्वीच रोखते.",
+      "param_mapping": "जेव्हा अल्परोध CDAC पुण्याच्या PARAM Yuva-II सुपरकंप्युटरवर लागू केला जातो, तेव्हा 17.54 kWh वीज वाचवता येते — भारताच्या कार्बन-सघन वीज ग्रिडवर 12.63 kg CO₂ रोखता येतो.",
+      "india_impact": "भारताचे वीज ग्रिड इटलीपेक्षा 3.13 पट अधिक कार्बन-सघन आहे. याचा अर्थ भारतात तीच वीज बचत 3.13 पट अधिक प्रदूषण रोखते — अल्परोध भारतीय सुपरकंप्युटर्ससाठी आणखी प्रभावी आहे.",
+      "green_score": "प्रत्येक कामाला A (सर्वात कार्यक्षम) ते F (सर्वात वाया) असा ग्रीन स्कोर मिळतो — जसे तुमच्या उपकरणांची ऊर्जा स्टार रेटिंग, पण सुपरकंप्युटर कामांसाठी."
+    }
+  }
+}
