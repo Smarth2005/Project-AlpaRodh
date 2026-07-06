@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="https://capsule-render.vercel.app/api?type=waving&color=00F5D4&height=180&section=header&text=अल्परोध%20%C2%B7%20AlpaRodh&fontSize=70&fontAlignY=35&desc=Minimal%20Resistance%20for%20Maximum%20Efficiency&descAlignY=60&descAlign=60&fontColor=0f172a" width="100%"/>
+<img src="https://capsule-render.vercel.app/api?type=waving&color=059669&height=180&section=header&text=अल्परोध%20%C2%B7%20AlpaRodh&fontSize=70&fontAlignY=35&desc=Minimal%20Resistance%20for%20Maximum%20Efficiency&descAlignY=60&descAlign=60&fontColor=ffffff" width="100%"/>
 
 <br/>
 
@@ -8,7 +8,7 @@
 
 <br/>
 
-[![Typing SVG](https://readme-typing-svg.herokuapp.com?font=Inter&weight=600&size=20&pause=1000&color=00F5D4&center=true&vCenter=true&width=600&lines=AI-Driven+Variable+Resistance+Reduction;Optimizing+India's+PARAM+Yuva-II;Translating+Compute+Waste+into+Green+Scores)](https://git.io/typing-svg)
+[![Typing SVG](https://readme-typing-svg.herokuapp.com?font=Inter&weight=600&size=20&pause=1000&color=059669&center=true&vCenter=true&width=600&lines=AI-Driven+Variable+Resistance+Reduction;Optimizing+India's+PARAM+Yuva-II;Translating+Compute+Waste+into+Green+Scores)](https://git.io/typing-svg)
 
 [![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.104%2B-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
@@ -129,10 +129,11 @@ To prevent the Waste Classifier from simply doing basic math (`alloc > req`) and
 ### TABLE I: Waste Classifier TOPSIS Comparison (Classification)
 Target: *Predict if a job is wasteful (1) or efficient (0) before it runs.*
 
+*(Note: All metrics were equally weighted at $w=1$ during TOPSIS evaluation)*
+
 | Model | Accuracy | Precision | Recall | F1 Score | Training Time | TOPSIS Score | Rank |
 |-------|----------|-----------|--------|----------|---------------|--------------|:----:|
-| *Weights ($w_j$)* | *1* | *1* | *1* | *1* | *1* | | |
-| *Impacts* | *+* | *+* | *+* | *+* | *-* | | |
+| *Impacts* | *↑* | *↑* | *↑* | *↑* | *↓* | | |
 | **XGBoost** 🌟 | **0.9363** | 0.7368 | 0.8770 | **0.8008** | **2.91s** | **0.9160** | **1** |
 | Random Forest | 0.9158 | 0.6618 | 0.8655 | 0.7501 | 12.87s | 0.8460 | 2 |
 | MLP (Neural Net) | 0.9296 | 0.8410 | 0.6379 | 0.7255 | 47.24s | 0.6680 | 3 |
@@ -143,10 +144,11 @@ Target: *Predict if a job is wasteful (1) or efficient (0) before it runs.*
 ### TABLE II: Energy Predictor TOPSIS Comparison (Regression)
 Target: *Predict total dynamic energy consumption (`energy_wh`).*
 
+*(Note: All metrics were equally weighted at $w=1$ during TOPSIS evaluation)*
+
 | Model | MAE (Wh) | RMSE (Wh) | R² Score | Training Time | TOPSIS Score | Rank |
 |-------|----------|-----------|----------|---------------|--------------|:----:|
-| *Weights ($w_j$)* | *1* | *1* | *1* | *1* | | |
-| *Impacts* | *-* | *-* | *+* | *-* | | |
+| *Impacts* | *↓* | *↓* | *↑* | *↓* | | |
 | **XGBoost** 🌟 | **0.0772** | **0.3649** | **0.9980** | **4.38s** | **0.9817** | **1** |
 | MLP (Neural Net) | 0.0602 | 0.2416 | 0.9991 | 56.57s | 0.8536 | 2 |
 | Gradient Boosting | 0.0659 | 0.2607 | 0.9990 | 140.91s | 0.6809 | 3 |
