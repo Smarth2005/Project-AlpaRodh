@@ -1,10 +1,14 @@
 <div align="center">
 
-# अल्परोध · AlpaRodh
+<img src="https://capsule-render.vercel.app/api?type=waving&color=00F5D4&height=180&section=header&text=अल्परोध%20%C2%B7%20AlpaRodh&fontSize=70&fontAlignY=35&desc=Minimal%20Resistance%20for%20Maximum%20Efficiency&descAlignY=60&descAlign=60&fontColor=0f172a" width="100%"/>
 
-### *अल्प (Minimal) + रोध (Resistance) = AlpaRodh*
+<br/>
 
-**AI-Driven Variable Resistance Reduction for India's Supercomputers**
+> *"The greenest supercomputer is not the one built with the newest silicon, <br/>but the one that wastes the least of what it already has."*
+
+<br/>
+
+[![Typing SVG](https://readme-typing-svg.herokuapp.com?font=Inter&weight=600&size=20&pause=1000&color=00F5D4&center=true&vCenter=true&width=600&lines=AI-Driven+Variable+Resistance+Reduction;Optimizing+India's+PARAM+Yuva-II;Translating+Compute+Waste+into+Green+Scores)](https://git.io/typing-svg)
 
 [![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.104%2B-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
