@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="150" viewBox="0 0 1000 150">
+    <defs>
+        <!-- Dark Dashboard Background -->
+        <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#111827" />
+            <stop offset="100%" stop-color="#0a0e1a" />
+        </linearGradient>
+        
+        <!-- AlpaRodh Dashboard Gradient Text -->
+        <linearGradient id="textGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#00f5d4" />
+            <stop offset="100%" stop-color="#ffd166" />
+        </linearGradient>
+
+        <!-- Tech Grid Pattern -->
+        <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+            <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(0, 245, 212, 0.05)" stroke-width="1"/>
+        </pattern>
+    </defs>
+
+    <!-- Wavy background path -->
+    <path d="M0,0 L1000,0 L1000,120 C750,170 250,90 0,140 Z" fill="url(#bg)"/>
+    <path d="M0,0 L1000,0 L1000,120 C750,170 250,90 0,140 Z" fill="url(#grid)"/>
+
+    <!-- Text (अल्परोध) — Smaller Size 60 -->
+    <text x="500" y="80" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-weight="800" font-size="60" text-anchor="middle" fill="url(#textGradient)">अल्परोध</text>
+    
+    <!-- Subtitle -->
+    <text x="500" y="110" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-weight="600" font-size="16" letter-spacing="6" text-anchor="middle" fill="#94a3b8">ALPARODH: MINIMAL RESISTANCE</text>
+</svg>
