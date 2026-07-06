@@ -4,6 +4,7 @@ import pandas as pd
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import RedirectResponse
 from pydantic import BaseModel
 from typing import Optional
 
@@ -14,6 +15,13 @@ app = FastAPI(
     description="API for HPC Energy Prediction and PARAM Yuva-II Mapping",
     version="1.0.0"
 )
+
+# Mount the static dashboard
+app.mount("/dashboard", StaticFiles(directory="dashboard"), name="dashboard")
+
+@app.get("/")
+def root():
+    return RedirectResponse(url="/dashboard/index.html")
 
 # Configure CORS
 app.add_middleware(
@@ -52,6 +60,30 @@ class TelemetryData(BaseModel):
     run_time: int
     num_gpus_alloc: Optional[int] = 0
 
+
+@app.get("/api/health")
+def health_check():
+    """Health check endpoint for Docker and monitoring."""
+    return {
+        "status": "ok",
+        "project": "AlpaRodh",
+        "version": "1.0.0",
+        "models_loaded": {
+            "waste_classifier": waste_classifier is not None,
+            "energy_predictor": energy_predictor is not None,
+        }
+    }
+
+
+@app.get("/api/data")
+def get_dashboard_data():
+    """Serve the pre-computed dashboard data.json via API."""
+    import json
+    data_path = config.DASHBOARD_DATA_PATH
+    if os.path.exists(data_path):
+        with open(data_path, "r", encoding="utf-8") as f:
+            return json.load(f)
+    raise HTTPException(status_code=404, detail="Dashboard data not found. Run the analysis pipeline first.")
 
 
 @app.post("/api/predict/energy")

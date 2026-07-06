@@ -96,17 +96,17 @@ from sklearn.metrics import (
 from sklearn.preprocessing import StandardScaler
 import joblib
 
+from . import config
+from .topsis import calculate_topsis
+import logging
+logger = logging.getLogger(__name__)
+
 try:
     from xgboost import XGBClassifier, XGBRegressor
     HAS_XGBOOST = True
 except ImportError:
     HAS_XGBOOST = False
     logger.info("⚠️  XGBoost not installed. Run: pip install xgboost")
-
-from . import config
-from .topsis import calculate_topsis
-import logging
-logger = logging.getLogger(__name__)
 
 
 

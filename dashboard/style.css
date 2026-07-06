@@ -74,6 +74,8 @@ body {
     overflow: hidden;
     text-align: center;
     padding: 2rem;
+    background: url('supercomputer_bg.png') no-repeat center center;
+    background-size: cover;
 }
 
 .hero-bg-grid {
@@ -85,20 +87,6 @@ body {
     background-size: 60px 60px;
     animation: gridPulse 8s ease-in-out infinite;
     z-index: 1;
-}
-
-.hero {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    overflow: hidden;
-    text-align: center;
-    padding: 2rem;
-    background: url('supercomputer_bg.png') no-repeat center center;
-    background-size: cover;
 }
 
 .hero::after {
