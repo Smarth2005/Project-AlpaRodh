@@ -102,7 +102,7 @@ const DEFAULT_DATA = {
         },
         hi: {
             baseline_energy: "सुपरकंप्यूटर ने कुल 1257.58 kWh बिजली खर्च की — यह एक भारतीय घर को लगभग 359.3 दिन चलाने के लिए पर्याप्त है।",
-            variable_resistance: "'वेरिएबल रेजिस्टेंस' वह बिजली है जो CPU गणना के दौरान उपयोग करता है। जब कोई कार्य अपने आवंटित कोर का पूरा उपयोग नहीं करता, तो ये कोर फिर भी बिजली खींचते हैं। अल्परोध इस बर्बादी को पहचानता और कम करता है।",
+            variable_resistance: "'वेरिएबल रेजिस्टेंस' वह बिजली है जो CPU गणना के दौरान उपयोग करता है। जब कोई कार्य अपने आवंटित कोर का पूरा उपयोग नहीं करता, तो ये कोर फिर भी बिजली खींचते हैं। अल्परोध इस बर्बादी को पहचानता है और कम करता है।",
             energy_savings: "अल्परोध ने 39.80 kWh (3.16%) बिजली बचाई — जैसे किसी बिल्डिंग में बेकार जलती लाइट्स बंद कर दी जाएं।",
             core_mismatch: "हमने 34681 ऐसे कार्य पाए जहां कंप्यूटर ने जरूरत से ज्यादा प्रोसेसर कोर आवंटित किए — जैसे 10 लोगों के लिए 100 सीट की बस बुक करना।",
             carbon_saved: "हमने 28.66 kg CO₂ उत्सर्जन रोका — यह 1.3 पेड़ लगाने या 136 km कार ड्राइविंग बचाने के बराबर है।",
@@ -164,8 +164,7 @@ const DEFAULT_DATA = {
             conclusion_efficient: "हे काम कार्यक्षमतेने चालत आहे. अल्परोध सुचवतो की कमी ग्रिड-इंटेन्सिटीच्या वेळी हे शेड्यूल करा.",
             lang_label: "मराठी",
         },
-    },
-};
+    };
 
 // ═══ GLOBALS ══════════════════════════════════════════════════════════════════
 const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
@@ -278,8 +277,8 @@ function openPrintWindow(reportHTML) {
 </head>
 <body>
 <div class="no-print">
-  <p>&#x1F4CB; Your AlpaRodh Job Analysis Report is ready</p>
-  <button class="save-btn" onclick="window.print()">&#x1F5A8;&#xFE0F; Save as PDF (Ctrl+P)</button>
+  <p>📋 Your AlpaRodh Job Analysis Report is ready</p>
+  <button class="save-btn" onclick="window.print()">🖨️ Save as PDF (Ctrl+P)</button>
   <button class="close-btn" onclick="window.close()">Close</button>
 </div>
 <div class="print-wrapper">${reportHTML}</div>
@@ -287,17 +286,472 @@ function openPrintWindow(reportHTML) {
 </body></html>`);
     win.document.close();
 }
+});
 
-// Dummy closing bracket — real one was consumed above
-(function(){})();
+// ═══ STAT COUNTERS ═══════════════════════════════════════════════════════════
+function animateCounter(element, target, decimals = 2, duration = 2000) {
+    const start = 0;
+    const startTime = performance.now();
 
-// â•â•â• JOB ANALYSIS REPORT BUILDER â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    function update(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3); // ease-out cubic
+        const current = start + (target - start) * eased;
+        element.textContent = current.toFixed(decimals);
+        if (progress < 1) requestAnimationFrame(update);
+    }
+
+    requestAnimationFrame(update);
+}
+
+function renderStats() {
+    const b = DATA.baseline;
+    const o = DATA.optimization.combined;
+    const c = DATA.carbon;
+
+    animateCounter(document.getElementById("stat-baseline"), b.total_baseline_kwh);
+    animateCounter(document.getElementById("stat-savings"), o.savings_kwh);
+    animateCounter(document.getElementById("stat-co2"), c.savings.co2_india_kg);
+    animateCounter(document.getElementById("stat-eta"), c.alpa_coefficient, 4);
+
+    // Strategy stats
+    document.getElementById("strat-corepark").textContent =
+        `${DATA.optimization.core_park.savings_kwh} kWh (${DATA.optimization.core_park.savings_percent}%)`;
+    document.getElementById("strat-dvfs").textContent =
+        `${DATA.optimization.dvfs.savings_kwh} kWh (${DATA.optimization.dvfs.savings_percent}%)`;
+    document.getElementById("strat-consol").textContent =
+        `${DATA.optimization.consolidation.potential_savings_kwh} kWh (Score: ${DATA.optimization.consolidation.score})`;
+
+    // AI metrics
+    const wc = DATA.ai_models.waste_classifier;
+    document.getElementById("ai-accuracy").textContent = `${(wc.accuracy * 100).toFixed(1)}%`;
+    document.getElementById("ai-precision").textContent = `${(wc.precision * 100).toFixed(1)}%`;
+    document.getElementById("ai-recall").textContent = `${(wc.recall * 100).toFixed(1)}%`;
+    document.getElementById("ai-f1").textContent = `${(wc.f1_score * 100).toFixed(1)}%`;
+
+    const ep = DATA.ai_models.energy_predictor;
+    document.getElementById("ai-r2").textContent = ep.r2_score.toFixed(4);
+    document.getElementById("ai-mae").textContent = `${ep.mae_wh.toFixed(2)} Wh`;
+    document.getElementById("ai-rmse").textContent = `${ep.rmse_wh.toFixed(2)} Wh`;
+
+    // PARAM mapping
+    const pm = DATA.param_mapping.mapping_summary;
+    document.getElementById("pm100-energy").textContent = `${pm.pm100_baseline_kwh} kWh`;
+    document.getElementById("param-energy").textContent = `${pm.param_baseline_kwh} kWh`;
+
+    const ind = DATA.param_mapping.projected_savings;
+    document.getElementById("india-multiplier").textContent = DATA.carbon.india_vs_italy.india_multiplier;
+    document.getElementById("india-co2").textContent = ind.co2_saved_india_kg;
+
+    // Equivalences
+    const eq = DATA.carbon.equivalences;
+    document.getElementById("equiv-trees").textContent = eq.trees_year;
+    document.getElementById("equiv-driving").textContent = eq.driving_km_avoided;
+    document.getElementById("equiv-phones").textContent = eq.phone_charges_equivalent;
+}
+
+// ═══ CHARTS ══════════════════════════════════════════════════════════════════
+function renderCharts() {
+    renderEnergyChart();
+    renderFeatureChart();
+    renderGreenScoreChart();
+    renderComparisonChart();
+}
+
+function renderEnergyChart() {
+    const ctx = document.getElementById("energyChart").getContext("2d");
+    const b = DATA.baseline.total_baseline_kwh;
+    const o = DATA.optimization.combined.optimized_total_kwh;
+
+    new Chart(ctx, {
+        type: "bar",
+        data: {
+            labels: ["Baseline Energy", "AlpaRodh Optimized"],
+            datasets: [{
+                data: [b, o],
+                backgroundColor: [
+                    "rgba(239, 71, 111, 0.7)",
+                    "rgba(0, 245, 212, 0.7)",
+                ],
+                borderColor: [
+                    "rgba(239, 71, 111, 1)",
+                    "rgba(0, 245, 212, 1)",
+                ],
+                borderWidth: 2,
+                borderRadius: 8,
+            }],
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: "rgba(10, 14, 26, 0.9)",
+                    titleColor: "#f1f5f9",
+                    bodyColor: "#94a3b8",
+                    borderColor: "rgba(0, 245, 212, 0.3)",
+                    borderWidth: 1,
+                    callbacks: {
+                        label: (ctx) => `${ctx.parsed.y.toFixed(2)} kWh`,
+                    },
+                },
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: { color: "rgba(255,255,255,0.05)" },
+                    ticks: { color: "#94a3b8", font: { family: "Inter" } },
+                    title: { display: true, text: "Energy (kWh)", color: "#94a3b8" },
+                },
+                x: {
+                    grid: { display: false },
+                    ticks: { color: "#94a3b8", font: { family: "Inter", weight: 500 } },
+                },
+            },
+        },
+    });
+}
+
+function renderFeatureChart() {
+    const ctx = document.getElementById("featureChart").getContext("2d");
+    const features = DATA.ai_models.waste_classifier.top_features || [];
+
+    const labels = features.map(f => f.name.replace(/_/g, " "));
+    const values = features.map(f => f.importance);
+
+    new Chart(ctx, {
+        type: "bar",
+        data: {
+            labels: labels,
+            datasets: [{
+                data: values,
+                backgroundColor: [
+                    "rgba(0, 245, 212, 0.7)",
+                    "rgba(167, 139, 250, 0.7)",
+                    "rgba(255, 209, 102, 0.7)",
+                    "rgba(239, 71, 111, 0.7)",
+                    "rgba(6, 214, 160, 0.7)",
+                    "rgba(0, 245, 212, 0.4)",
+                    "rgba(167, 139, 250, 0.4)",
+                ],
+                borderRadius: 6,
+            }],
+        },
+        options: {
+            indexAxis: "y",
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                x: {
+                    grid: { color: "rgba(255,255,255,0.05)" },
+                    ticks: { color: "#94a3b8", font: { size: 10 } },
+                },
+                y: {
+                    grid: { display: false },
+                    ticks: { color: "#f1f5f9", font: { family: "Inter", size: 11 } },
+                },
+            },
+        },
+    });
+}
+
+function renderGreenScoreChart() {
+    const ctx = document.getElementById("greenScoreChart").getContext("2d");
+    const dist = DATA.carbon.grade_distribution;
+
+    new Chart(ctx, {
+        type: "doughnut",
+        data: {
+            labels: ["A — Excellent", "B — Good", "C — Average", "D — Below Avg", "F — Poor"],
+            datasets: [{
+                data: [dist.A || 0, dist.B || 0, dist.C || 0, dist.D || 0, dist.F || 0],
+                backgroundColor: [
+                    "rgba(0, 245, 212, 0.8)",
+                    "rgba(6, 214, 160, 0.8)",
+                    "rgba(255, 209, 102, 0.8)",
+                    "rgba(239, 71, 111, 0.6)",
+                    "rgba(239, 71, 111, 0.9)",
+                ],
+                borderWidth: 0,
+            }],
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: "60%",
+            plugins: {
+                legend: {
+                    position: "bottom",
+                    labels: { color: "#94a3b8", font: { family: "Inter", size: 11 }, padding: 12 },
+                },
+            },
+        },
+    });
+}
+
+function renderComparisonChart() {
+    const ctx = document.getElementById("comparisonChart").getContext("2d");
+    const c = DATA.carbon;
+
+    new Chart(ctx, {
+        type: "bar",
+        data: {
+            labels: ["Italy (PM100)", "India (PARAM)"],
+            datasets: [
+                {
+                    label: "Baseline CO₂ (kg)",
+                    data: [c.baseline.co2_italy_kg, c.baseline.co2_india_kg],
+                    backgroundColor: "rgba(239, 71, 111, 0.6)",
+                    borderRadius: 6,
+                },
+                {
+                    label: "CO₂ Saved (kg)",
+                    data: [c.savings.co2_italy_kg, c.savings.co2_india_kg],
+                    backgroundColor: "rgba(0, 245, 212, 0.7)",
+                    borderRadius: 6,
+                },
+            ],
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    labels: { color: "#94a3b8", font: { family: "Inter" } },
+                },
+            },
+            scales: {
+                y: {
+                    grid: { color: "rgba(255,255,255,0.05)" },
+                    ticks: { color: "#94a3b8" },
+                    title: { display: true, text: "kg CO₂", color: "#94a3b8" },
+                },
+                x: {
+                    grid: { display: false },
+                    ticks: { color: "#94a3b8" },
+                },
+            },
+        },
+    });
+}
+
+// ═══ TRANSLATIONS ════════════════════════════════════════════════════════════
+const EXPLAIN_TITLES = {
+    baseline_energy: "⚡ Energy Consumption",
+    variable_resistance: "🔌 Variable Resistance",
+    energy_savings: "📉 Energy Savings",
+    core_mismatch: "⚠️ Core Over-Allocation",
+    carbon_saved: "🌿 Carbon Impact",
+    alpa_coefficient: "📈 AlpaRodh Coefficient",
+    ai_prediction: "🤖 AI Prediction",
+    param_mapping: "🇮🇳 PARAM Yuva-II",
+    india_impact: "🌏 India Impact",
+    green_score: "⭐ Green Score",
+};
+
+function renderTranslations(lang) {
+    const grid = document.getElementById("explain-grid");
+    const translations = DATA.translations[lang] || DATA.translations.en;
+
+    grid.innerHTML = "";
+
+    for (const [key, title] of Object.entries(EXPLAIN_TITLES)) {
+        const text = translations[key] || "[Translation pending]";
+        const card = document.createElement("div");
+        card.className = "explain-card";
+        card.innerHTML = `
+            <div class="explain-card-title">${title}</div>
+            <div class="explain-card-text">${text}</div>
+        `;
+        grid.appendChild(card);
+    }
+}
+
+function setupLanguageSwitcher() {
+    document.querySelectorAll(".lang-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+            document.querySelectorAll(".lang-btn").forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+            currentLang = btn.dataset.lang;
+            renderTranslations(currentLang);
+        });
+    });
+}
+
+// ═══ SCROLL ANIMATIONS ══════════════════════════════════════════════════════
+function setupScrollAnimations() {
+    const observer = new IntersectionObserver(
+        (entries) => {
+            entries.forEach((entry, index) => {
+                if (entry.isIntersecting) {
+                    setTimeout(() => {
+                        entry.target.classList.add("visible");
+                    }, index * 100);
+                    observer.unobserve(entry.target);
+                }
+            });
+        },
+        { threshold: 0.1, rootMargin: "0px 0px -50px 0px" }
+    );
+
+    document.querySelectorAll("[data-animate]").forEach(el => observer.observe(el));
+}
+
+// ═══ MODEL COMPARISON CHARTS ════════════════════════════════════════════════
+function renderModelComparisonCharts() {
+    const classData = DATA.ai_models.classifier_comparison;
+    const regData = DATA.ai_models.regressor_comparison;
+
+    if (!classData || !regData) return;
+
+    const classCtx = document.getElementById("classifierChart").getContext("2d");
+    new Chart(classCtx, {
+        type: "bar",
+        data: {
+            labels: classData.map(d => d.Model),
+            datasets: [
+                {
+                    label: "F1 Score",
+                    data: classData.map(d => d.F1_Score),
+                    backgroundColor: "rgba(0, 245, 212, 0.7)",
+                    borderRadius: 4,
+                },
+                {
+                    label: "Accuracy",
+                    data: classData.map(d => d.Accuracy),
+                    backgroundColor: "rgba(167, 139, 250, 0.7)",
+                    borderRadius: 4,
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { labels: { color: "#94a3b8", font: { family: "Inter" } } } },
+            scales: {
+                y: { grid: { color: "rgba(255,255,255,0.05)" }, ticks: { color: "#94a3b8" } },
+                x: { grid: { display: false }, ticks: { color: "#94a3b8" } }
+            }
+        }
+    });
+
+    const regCtx = document.getElementById("regressorChart").getContext("2d");
+    new Chart(regCtx, {
+        type: "bar",
+        data: {
+            labels: regData.map(d => d.Model),
+            datasets: [
+                {
+                    label: "R² Score",
+                    data: regData.map(d => d.R2_Score),
+                    backgroundColor: "rgba(239, 71, 111, 0.7)",
+                    borderRadius: 4,
+                },
+                {
+                    label: "MAE (Wh)",
+                    data: regData.map(d => d.MAE_Wh),
+                    backgroundColor: "rgba(255, 209, 102, 0.7)",
+                    borderRadius: 4,
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { labels: { color: "#94a3b8", font: { family: "Inter" } } } },
+            scales: {
+                y: { grid: { color: "rgba(255,255,255,0.05)" }, ticks: { color: "#94a3b8" } },
+                x: { grid: { display: false }, ticks: { color: "#94a3b8" } }
+            }
+        }
+    });
+}
+
+// ═══ LIVE PREDICTOR API ═════════════════════════════════════════════════════
+function setupLivePredictor() {
+    const resultBox = document.getElementById("predictor-result");
+    
+    function getTelemetryData() {
+        return {
+            node_pwr_w: parseFloat(document.getElementById("inp-node-pwr").value) || 0,
+            cpu_pwr_w: parseFloat(document.getElementById("inp-cpu-pwr").value) || 0,
+            mem_pwr_w: parseFloat(document.getElementById("inp-mem-pwr").value) || 0,
+            num_cores_req: parseInt(document.getElementById("inp-req-cores").value) || 0,
+            num_cores_alloc: parseInt(document.getElementById("inp-alloc-cores").value) || 0,
+            run_time: parseInt(document.getElementById("inp-runtime").value) || 0,
+            num_gpus_alloc: 0
+        };
+    }
+
+    const energyBtn = document.getElementById("btn-predict-energy");
+    if(energyBtn) {
+        energyBtn.addEventListener("click", async (e) => {
+            e.preventDefault();
+            resultBox.innerHTML = '<p style="color: var(--cyan)">Loading prediction...</p>';
+            try {
+                const res = await fetch(`${API_BASE_URL}/api/predict/energy`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(getTelemetryData())
+                });
+                if(!res.ok) throw new Error("API not running or model not loaded.");
+                const data = await res.json();
+                
+                // Save for PDF export
+                window.lastPrediction = {
+                    type: "energy",
+                    value: data.energy_wh_prediction,
+                    inputs: getTelemetryData()
+                };
+
+                resultBox.innerHTML = `<h3><span style="color: var(--cyan)">Energy Prediction:</span> ${data.energy_wh_prediction} Wh</h3>`;
+            } catch (err) {
+                resultBox.innerHTML = `<p style="color: var(--coral)">Error: ${err.message}. Make sure FastAPI is running.</p>`;
+            }
+        });
+    }
+
+    const wasteBtn = document.getElementById("btn-predict-waste");
+    if(wasteBtn) {
+        wasteBtn.addEventListener("click", async (e) => {
+            e.preventDefault();
+            resultBox.innerHTML = '<p style="color: var(--cyan)">Loading prediction...</p>';
+            try {
+                const res = await fetch(`${API_BASE_URL}/api/predict/waste`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(getTelemetryData())
+                });
+                if(!res.ok) throw new Error("API not running or model not loaded.");
+                const data = await res.json();
+                
+                // Save for PDF export
+                window.lastPrediction = {
+                    type: "waste",
+                    value: data.is_wasteful,
+                    inputs: getTelemetryData()
+                };
+
+                const text = data.is_wasteful ? '<span style="color: var(--coral)">Wasteful!</span>' : '<span style="color: var(--emerald)">Efficient!</span>';
+                resultBox.innerHTML = `<h3><span style="color: var(--cyan)">Waste Classification:</span> ${text}</h3>`;
+            } catch (err) {
+                resultBox.innerHTML = `<p style="color: var(--coral)">Error: ${err.message}. Make sure FastAPI is running.</p>`;
+            }
+        });
+    }
+}
+
+
+// ═══ JOB ANALYSIS REPORT BUILDER ══════════════════════════════════════════════
 function buildJobAnalysisReport(inp, energyWh, isWasteful) {
     const T = (DATA.translations[currentLang] || DATA.translations.en);
     const langLabel = T.lang_label || currentLang.toUpperCase();
     const timestamp = new Date().toLocaleString("en-IN", { dateStyle:"long", timeStyle:"short", timeZone:"Asia/Kolkata" });
 
-    // â”€â”€ Per-job calculations â”€â”€
+    // ── Per-job calculations ──
     const energyKwh    = energyWh / 1000;
     const co2IndiaG    = (energyKwh * 720 * 1000).toFixed(2);
     const co2ItalyG    = (energyKwh * 230 * 1000).toFixed(2);
@@ -310,13 +764,13 @@ function buildJobAnalysisReport(inp, energyWh, isWasteful) {
     const phoneCharges = Math.round(parseFloat(co2IndiaG) / 8.22);
     const drivingKm    = (parseFloat(co2IndiaKg) / 0.00021).toFixed(1);
 
-    // â”€â”€ Green Score â”€â”€
+    // ── Green Score ──
     const co2g = parseFloat(co2IndiaG);
     const grade = co2g <= 0.5 ? "A" : co2g <= 1.0 ? "B" : co2g <= 2.0 ? "C" : co2g <= 5.0 ? "D" : "F";
     const gradeColor = {A:"#059669",B:"#0ea5e9",C:"#f59e0b",D:"#f97316",F:"#ef4444"}[grade];
     const gradeText  = {A:"Excellent",B:"Good",C:"Average",D:"Below Average",F:"Poor"}[grade];
 
-    // â”€â”€ CSS helpers â”€â”€
+    // ── CSS helpers ──
     const H2   = "font-size:17px;font-weight:700;color:#0f172a;margin:24px 0 10px 0;padding-bottom:6px;border-bottom:2px solid #cbd5e1;";
     const P    = "font-size:13px;color:#475569;margin:5px 0;line-height:1.65;";
     const TH   = "padding:9px 12px;font-size:11px;font-weight:700;color:#475569;text-transform:uppercase;background:#f1f5f9;border:1px solid #e2e8f0;text-align:left;";
@@ -341,13 +795,13 @@ function buildJobAnalysisReport(inp, energyWh, isWasteful) {
                bodyHTML + "</div>";
     }
 
-    // â”€â”€ Verdict â”€â”€
+    // ── Verdict ──
     const verdictColor   = isWasteful ? "#ef4444" : "#059669";
     const verdictText    = isWasteful ? T.verdict_wasteful : T.verdict_efficient;
     const verdictExplain = isWasteful ? T.verdict_wasteful_explain : T.verdict_efficient_explain;
     const verdictEmoji   = isWasteful ? "&#x26A0;&#xFE0F;" : "&#x2705;";
 
-    // â”€â”€ Recommendations â”€â”€
+    // ── Recommendations ──
     let recoList = "";
     if (isWasteful) recoList += "<p style='" + P + "'>&#x1F17F;&#xFE0F; " + T.reco_corepark + "</p>";
     if (isMemBound) recoList += "<p style='" + P + "'>&#x1F504; " + T.reco_dvfs + "</p>";
@@ -446,3 +900,4 @@ function buildJobAnalysisReport(inp, energyWh, isWasteful) {
     "<p style='font-size:10px;color:#cbd5e1;margin:6px 0 0 0;'>Report generated: " + timestamp + "</p>" +
     "</div></div>";
 }
+
