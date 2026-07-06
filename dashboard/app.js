@@ -640,13 +640,13 @@ function setupLivePredictor() {
     }
 }
 
-// ═══ PDF REPORT BUILDER ═════════════════════════════════════════════════════
+// ═══ PDF REPORT BUILDER (html2canvas-safe — no flex/gap, no webkit gradient text) ═══
 function buildPDFReport() {
-    const b = DATA.baseline;
-    const o = DATA.optimization;
+    const b  = DATA.baseline;
+    const o  = DATA.optimization;
     const ai = DATA.ai_models;
     const pm = DATA.param_mapping;
-    const c = DATA.carbon;
+    const c  = DATA.carbon;
     const eq = c.equivalences;
     const translations = DATA.translations[currentLang] || DATA.translations.en;
 
@@ -654,261 +654,243 @@ function buildPDFReport() {
         dateStyle: "long", timeStyle: "short", timeZone: "Asia/Kolkata"
     });
 
-    // ── Shared styles ──
-    const S = {
-        page: `font-family: 'Segoe UI', 'Inter', Arial, sans-serif; color: #1e293b; background: #ffffff; width: 100%; padding: 0; line-height: 1.5;`,
-        h2: `font-size: 18px; font-weight: 700; color: #0f172a; margin: 28px 0 14px 0; padding-bottom: 8px; border-bottom: 2px solid #e2e8f0;`,
-        h3: `font-size: 15px; font-weight: 600; color: #334155; margin: 18px 0 10px 0;`,
-        p: `font-size: 13px; color: #475569; margin: 6px 0; line-height: 1.65;`,
-        card: `background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 16px; margin-bottom: 12px;`,
-        cardAccent: (color) => `background: ${color}11; border: 1px solid ${color}44; border-left: 4px solid ${color}; border-radius: 10px; padding: 16px; margin-bottom: 12px;`,
-        metricBox: `display: inline-block; width: 23%; text-align: center; padding: 14px 8px; background: #f1f5f9; border-radius: 10px; margin: 4px 0.5%; vertical-align: top;`,
-        metricVal: `font-size: 22px; font-weight: 700; color: #0f172a; margin: 4px 0;`,
-        metricLabel: `font-size: 11px; color: #64748b; margin: 0;`,
-        tblRow: (i) => `background: ${i % 2 === 0 ? '#f8fafc' : '#ffffff'};`,
-        tblCell: `padding: 10px 14px; font-size: 13px; border-bottom: 1px solid #e2e8f0;`,
-        tblHeader: `padding: 10px 14px; font-size: 12px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #cbd5e1; background: #f1f5f9;`,
-    };
+    // ── html2canvas-SAFE shared styles (no flex/gap, no webkit gradient text) ──
+    const H2   = `font-size:18px;font-weight:700;color:#0f172a;margin:28px 0 12px 0;padding-bottom:8px;border-bottom:2px solid #cbd5e1;`;
+    const H3   = `font-size:14px;font-weight:600;color:#334155;margin:16px 0 8px 0;`;
+    const P    = `font-size:13px;color:#475569;margin:5px 0;line-height:1.6;`;
+    const CARD = `background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:14px;margin-bottom:12px;`;
+    const TH   = `padding:9px 12px;font-size:11px;font-weight:700;color:#475569;text-transform:uppercase;background:#f1f5f9;border-bottom:2px solid #cbd5e1;text-align:left;border:1px solid #e2e8f0;`;
+    const TD   = `padding:9px 12px;font-size:13px;border:1px solid #e2e8f0;color:#1e293b;vertical-align:top;`;
+    const TD_ALT = `padding:9px 12px;font-size:13px;border:1px solid #e2e8f0;color:#1e293b;background:#f8fafc;vertical-align:top;`;
 
-    // ── Helper: build a styled table from rows ──
-    function styledTable(headers, rows) {
-        let html = `<table style="width: 100%; border-collapse: collapse; margin: 10px 0 20px 0; border-radius: 8px; overflow: hidden; border: 1px solid #e2e8f0;">`;
-        html += `<thead><tr>${headers.map(h => `<th style="${S.tblHeader} text-align: left;">${h}</th>`).join('')}</tr></thead>`;
-        html += `<tbody>`;
+    // ── Helper: build table with alternating rows ──
+    function tbl(headers, rows, colWidths) {
+        const wAttrs = colWidths ? colWidths.map(w => `style="width:${w}"`) : headers.map(() => '');
+        let h = `<table style="width:100%;border-collapse:collapse;margin:8px 0 18px 0;"><thead><tr>`;
+        h += headers.map((hd, i) => `<th ${wAttrs[i]} style="${TH}">${hd}</th>`).join('');
+        h += `</tr></thead><tbody>`;
         rows.forEach((row, i) => {
-            html += `<tr style="${S.tblRow(i)}">${row.map(cell => `<td style="${S.tblCell}">${cell}</td>`).join('')}</tr>`;
+            h += `<tr>${row.map(cell => `<td style="${i%2===0 ? TD : TD_ALT}">${cell}</td>`).join('')}</tr>`;
         });
-        html += `</tbody></table>`;
-        return html;
+        h += `</tbody></table>`;
+        return h;
     }
 
-    // ── Live prediction section ──
-    let predictionSection = '';
-    if (window.lastPrediction) {
-        const inp = window.lastPrediction.inputs;
-        let resultHTML = '';
-        if (window.lastPrediction.type === "energy") {
-            resultHTML = `<div style="${S.cardAccent('#0ea5e9')}">
-                <p style="font-size: 11px; color: #64748b; margin: 0 0 4px 0; text-transform: uppercase; letter-spacing: 1px;">⚡ AI Prediction Result</p>
-                <p style="font-size: 24px; font-weight: 700; color: #0ea5e9; margin: 0;">Predicted Energy: ${window.lastPrediction.value} Wh</p>
-            </div>`;
-        } else {
-            const isWaste = window.lastPrediction.value;
-            const wColor = isWaste ? '#ef4444' : '#10b981';
-            const wText = isWaste ? '⚠️ Wasteful — Inefficient Resource Allocation' : '✅ Efficient — Proper Resource Allocation';
-            resultHTML = `<div style="${S.cardAccent(wColor)}">
-                <p style="font-size: 11px; color: #64748b; margin: 0 0 4px 0; text-transform: uppercase; letter-spacing: 1px;">🔍 Waste Classification Result</p>
-                <p style="font-size: 20px; font-weight: 700; color: ${wColor}; margin: 0;">${wText}</p>
-            </div>`;
-        }
-
-        predictionSection = `
-            <h2 style="${S.h2}">⚡ Live AI Prediction</h2>
-            <h3 style="${S.h3}">Telemetry Inputs</h3>
-            ${styledTable(['Parameter', 'Value'], [
-                ['🔌 Node Power', `${inp.node_pwr_w} W`],
-                ['💻 CPU Power', `${inp.cpu_pwr_w} W`],
-                ['🧠 Memory Power', `${inp.mem_pwr_w} W`],
-                ['📋 Requested Cores', `${inp.num_cores_req}`],
-                ['📦 Allocated Cores', `${inp.num_cores_alloc}`],
-                ['⏱️ Run Time', `${inp.run_time} s`],
-            ])}
-            ${resultHTML}
-        `;
+    // ── Two-column layout using a table (flex-safe alternative) ──
+    function twoCol(leftHTML, rightHTML) {
+        return `<table style="width:100%;border-collapse:collapse;margin-bottom:16px;">
+            <tr>
+                <td style="width:49%;vertical-align:top;padding-right:8px;">${leftHTML}</td>
+                <td style="width:2%;text-align:center;vertical-align:middle;font-size:22px;color:#94a3b8;">&#x2192;</td>
+                <td style="width:49%;vertical-align:top;padding-left:8px;">${rightHTML}</td>
+            </tr>
+        </table>`;
     }
 
-    // ── Strategy cards HTML ──
-    function strategyCard(emoji, name, value, desc) {
-        return `<div style="display: inline-block; width: 31%; vertical-align: top; margin: 0 1%; ${S.card}">
-            <p style="font-size: 20px; margin: 0 0 4px 0;">${emoji}</p>
-            <p style="font-size: 14px; font-weight: 600; color: #0f172a; margin: 0 0 4px 0;">${name}</p>
-            <p style="font-size: 18px; font-weight: 700; color: #059669; margin: 0 0 4px 0;">${value}</p>
-            <p style="font-size: 11px; color: #64748b; margin: 0;">${desc}</p>
+    // ── Three-column layout using a table ──
+    function threeCol(c1, c2, c3) {
+        return `<table style="width:100%;border-collapse:collapse;margin-bottom:16px;">
+            <tr>
+                <td style="width:32%;vertical-align:top;padding-right:6px;">${c1}</td>
+                <td style="width:2%;"></td>
+                <td style="width:32%;vertical-align:top;padding-right:6px;">${c2}</td>
+                <td style="width:2%;"></td>
+                <td style="width:32%;vertical-align:top;">${c3}</td>
+            </tr>
+        </table>`;
+    }
+
+    function accentCard(color, label, valueHTML) {
+        return `<div style="background:#f8fafc;border-left:4px solid ${color};border-radius:6px;padding:14px;margin-bottom:12px;">
+            <p style="font-size:10px;color:#64748b;margin:0 0 4px 0;text-transform:uppercase;letter-spacing:1px;">${label}</p>
+            <div>${valueHTML}</div>
         </div>`;
     }
 
-    // ── Classifier comparison table ──
-    const classComparison = ai.classifier_comparison || [];
-    const classRows = classComparison.map(m => [
-        `<strong>${m.Model}</strong>${m.Rank === 1 ? ' 🏆' : ''}`,
+    function metricCard(emoji, value, label) {
+        return `<div style="${CARD}text-align:center;">
+            <p style="font-size:22px;margin:0 0 4px 0;">${emoji}</p>
+            <p style="font-size:20px;font-weight:700;color:#0f172a;margin:2px 0;">${value}</p>
+            <p style="font-size:11px;color:#64748b;margin:0;">${label}</p>
+        </div>`;
+    }
+
+    // ── Classifier rows ──
+    const classRows = (ai.classifier_comparison || []).map(m => [
+        `<strong>${m.Model}</strong>${m.Rank === 1 ? ' &#x1F3C6;' : ''}`,
         (m.Accuracy * 100).toFixed(1) + '%',
-        (m.F1_Score * 100).toFixed(1) + '%',
+        (m.F1_Score  * 100).toFixed(1) + '%',
         m.Training_Time_s + 's',
         `#${m.Rank}`
     ]);
 
-    // ── Regressor comparison table ──
-    const regComparison = ai.regressor_comparison || [];
-    const regRows = regComparison.map(m => [
-        `<strong>${m.Model}</strong>${m.Rank === 1 ? ' 🏆' : ''}`,
+    // ── Regressor rows ──
+    const regRows = (ai.regressor_comparison || []).map(m => [
+        `<strong>${m.Model}</strong>${m.Rank === 1 ? ' &#x1F3C6;' : ''}`,
         m.R2_Score.toFixed(4),
         m.MAE_Wh.toFixed(4) + ' Wh',
         m.Training_Time_s + 's',
         `#${m.Rank}`
     ]);
 
-    // ── Build Full Report ──
-    return `
-    <div style="${S.page}">
+    // ── Live prediction section ──
+    let predictionSection = '';
+    if (window.lastPrediction) {
+        const inp = window.lastPrediction.inputs;
+        let resultCard = '';
+        if (window.lastPrediction.type === "energy") {
+            resultCard = accentCard('#0ea5e9', '&#x26A1; AI Prediction Result',
+                `<p style="font-size:20px;font-weight:700;color:#0ea5e9;margin:0;">Predicted Energy: ${window.lastPrediction.value} Wh</p>`);
+        } else {
+            const isWaste = window.lastPrediction.value;
+            const wCol   = isWaste ? '#ef4444' : '#10b981';
+            const wText  = isWaste ? '&#x26A0;&#xFE0F; Wasteful — Inefficient Resource Allocation'
+                                   : '&#x2705; Efficient — Proper Resource Allocation';
+            resultCard = accentCard(wCol, '&#x1F50D; Waste Classification',
+                `<p style="font-size:18px;font-weight:700;color:${wCol};margin:0;">${wText}</p>`);
+        }
+        predictionSection = `
+            <h2 style="${H2}">&#x26A1; Live AI Prediction</h2>
+            <h3 style="${H3}">Telemetry Inputs</h3>
+            ${tbl(['Parameter','Value'],[
+                ['&#x1F50C; Node Power',   `${inp.node_pwr_w} W`],
+                ['&#x1F4BB; CPU Power',    `${inp.cpu_pwr_w} W`],
+                ['&#x1F9E0; Memory Power', `${inp.mem_pwr_w} W`],
+                ['Requested Cores',        `${inp.num_cores_req}`],
+                ['Allocated Cores',        `${inp.num_cores_alloc}`],
+                ['&#x23F1;&#xFE0F; Run Time', `${inp.run_time} s`],
+            ],['50%','50%'])}
+            ${resultCard}`;
+    }
 
-        <!-- ═══ HEADER ═══ -->
-        <div style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%); padding: 32px 30px; border-radius: 12px; margin-bottom: 24px; text-align: center;">
-            <p style="font-size: 36px; font-weight: 800; margin: 0; background: linear-gradient(135deg, #00f5d4, #ffd166); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 1px;">अल्परोध</p>
-            <p style="font-size: 20px; font-weight: 400; color: #94a3b8; letter-spacing: 4px; text-transform: uppercase; margin: 4px 0 0 0;">AlpaRodh</p>
-            <p style="font-size: 12px; color: #64748b; margin: 12px 0 0 0;">AI-Driven Variable Resistance Reduction for India's Supercomputers</p>
-            <div style="margin-top: 14px;">
-                <span style="display: inline-block; padding: 4px 14px; border: 1px solid #00f5d455; border-radius: 20px; font-size: 11px; color: #00f5d4; margin: 0 4px;">PARAM Yuva-II</span>
-                <span style="display: inline-block; padding: 4px 14px; border: 1px solid #ffd16655; border-radius: 20px; font-size: 11px; color: #ffd166; margin: 0 4px;">CDAC Pune</span>
-                <span style="display: inline-block; padding: 4px 14px; border: 1px solid #ef476f55; border-radius: 20px; font-size: 11px; color: #ef476f; margin: 0 4px;">PM100 Dataset</span>
-            </div>
+    // ── Build the report HTML ──
+    return `<div style="font-family:Arial,Helvetica,sans-serif;color:#1e293b;background:#ffffff;width:760px;padding:30px;box-sizing:border-box;">
+
+        <!-- HEADER -->
+        <div style="background:#0f172a;padding:28px 24px;border-radius:10px;margin-bottom:24px;text-align:center;">
+            <p style="font-size:34px;font-weight:800;color:#00f5d4;margin:0;letter-spacing:1px;">&#x0905;&#x0932;&#x094D;&#x092A;&#x0930;&#x094B;&#x0927;</p>
+            <p style="font-size:18px;font-weight:400;color:#94a3b8;letter-spacing:4px;text-transform:uppercase;margin:6px 0 0 0;">AlpaRodh</p>
+            <p style="font-size:12px;color:#64748b;margin:10px 0 0 0;">AI-Driven Variable Resistance Reduction for India's Supercomputers</p>
+            <p style="margin:12px 0 0 0;">
+                <span style="display:inline-block;padding:3px 12px;border:1px solid #00f5d4;border-radius:12px;font-size:11px;color:#00f5d4;margin:0 4px;">PARAM Yuva-II</span>
+                <span style="display:inline-block;padding:3px 12px;border:1px solid #ffd166;border-radius:12px;font-size:11px;color:#ffd166;margin:0 4px;">CDAC Pune</span>
+                <span style="display:inline-block;padding:3px 12px;border:1px solid #ef476f;border-radius:12px;font-size:11px;color:#ef476f;margin:0 4px;">PM100 Dataset</span>
+            </p>
         </div>
 
-        <!-- ═══ KEY METRICS ═══ -->
-        <h2 style="${S.h2}">📊 System Overview</h2>
-        <div style="text-align: center; margin-bottom: 20px;">
-            <div style="${S.metricBox}">
-                <p style="font-size: 20px; margin: 0;">⚡</p>
-                <p style="${S.metricVal}">${b.total_baseline_kwh}</p>
-                <p style="${S.metricLabel}">Baseline (kWh)</p>
-            </div>
-            <div style="${S.metricBox}">
-                <p style="font-size: 20px; margin: 0;">📉</p>
-                <p style="${S.metricVal}">${o.combined.savings_kwh}</p>
-                <p style="${S.metricLabel}">Saved (kWh)</p>
-            </div>
-            <div style="${S.metricBox}">
-                <p style="font-size: 20px; margin: 0;">🌿</p>
-                <p style="${S.metricVal}">${c.savings.co2_india_kg}</p>
-                <p style="${S.metricLabel}">CO₂ Prevented (kg)</p>
-            </div>
-            <div style="${S.metricBox}">
-                <p style="font-size: 20px; margin: 0;">📈</p>
-                <p style="${S.metricVal}">${c.alpa_coefficient}</p>
-                <p style="${S.metricLabel}">ηα (gCO₂/kWh)</p>
-            </div>
-        </div>
+        <!-- KEY METRICS (4 cols via table) -->
+        <h2 style="${H2}">&#x1F4CA; System Overview</h2>
+        ${threeCol(
+            metricCard('&#x26A1;', b.total_baseline_kwh + ' kWh', 'Baseline Energy'),
+            metricCard('&#x1F4C9;', o.combined.savings_kwh + ' kWh', 'Energy Saved'),
+            metricCard('&#x1F333;', c.savings.co2_india_kg + ' kg', 'CO&#x2082; Prevented')
+        )}
+        ${tbl(['Metric','Value'],[
+            ['Total Jobs Analyzed',   b.total_jobs.toLocaleString()],
+            ['Variable Energy',       `${b.total_variable_kwh} kWh (${b.variable_percent}%)`],
+            ['Core Mismatch Jobs',    `${b.mismatch_count.toLocaleString()} (${b.mismatch_percent}%)`],
+            ['Mean Node Power',       `${b.mean_node_power_w} W`],
+            ['Max Node Power',        `${b.max_node_power_w} W`],
+            ['AlpaRodh Coefficient',  `${c.alpa_coefficient} gCO&#x2082;/kWh`],
+        ],['55%','45%'])}
 
-        ${styledTable(['Metric', 'Value'], [
-            ['📂 Total Jobs Analyzed', b.total_jobs.toLocaleString()],
-            ['🔋 Variable Energy', `${b.total_variable_kwh} kWh (${b.variable_percent}%)`],
-            ['🔒 Static Floor Power', `${b.static_floor_w} W`],
-            ['⚠️ Core Mismatch Jobs', `${b.mismatch_count.toLocaleString()} (${b.mismatch_percent}%)`],
-            ['📊 Mean Node Power', `${b.mean_node_power_w} W`],
-            ['🔺 Max Node Power', `${b.max_node_power_w} W`],
+        <!-- OPTIMIZATION -->
+        <h2 style="${H2}">&#x1F527; Energy Optimization Strategies</h2>
+        ${threeCol(
+            `<div style="${CARD}text-align:center;"><p style="font-size:13px;font-weight:600;color:#0f172a;margin:0 0 6px 0;">&#x1F17F;&#xFE0F; Core-Park</p><p style="font-size:17px;font-weight:700;color:#059669;margin:0;">${o.core_park.savings_kwh} kWh</p><p style="font-size:11px;color:#64748b;margin:4px 0 0 0;">${o.core_park.savings_percent}% savings</p></div>`,
+            `<div style="${CARD}text-align:center;"><p style="font-size:13px;font-weight:600;color:#0f172a;margin:0 0 6px 0;">&#x1F504; DVFS</p><p style="font-size:17px;font-weight:700;color:#059669;margin:0;">${o.dvfs.savings_kwh} kWh</p><p style="font-size:11px;color:#64748b;margin:4px 0 0 0;">${o.dvfs.savings_percent}% savings</p></div>`,
+            `<div style="${CARD}text-align:center;"><p style="font-size:13px;font-weight:600;color:#0f172a;margin:0 0 6px 0;">&#x1F4E6; Consolidation</p><p style="font-size:17px;font-weight:700;color:#059669;margin:0;">${o.consolidation.potential_savings_kwh} kWh</p><p style="font-size:11px;color:#64748b;margin:4px 0 0 0;">Score: ${o.consolidation.score}</p></div>`
+        )}
+        ${accentCard('#059669','&#x1F3C6; Combined AlpaRodh Optimization',
+            `<p style="font-size:18px;font-weight:700;color:#059669;margin:0;">${o.combined.savings_kwh} kWh saved (${o.combined.savings_percent}%) &#x2192; Optimized total: ${o.combined.optimized_total_kwh} kWh</p>`)}
+
+        <!-- AI MODELS -->
+        <h2 style="${H2}">&#x1F9E0; AI Prediction Engine</h2>
+        ${twoCol(
+            `<div style="background:#f0f0ff;border-left:4px solid #6366f1;border-radius:6px;padding:14px;">
+                <p style="font-size:10px;color:#6366f1;text-transform:uppercase;letter-spacing:1px;margin:0 0 4px 0;">Waste Classifier</p>
+                <p style="font-size:14px;font-weight:700;color:#4338ca;margin:0 0 10px 0;">${ai.waste_classifier.model_type || 'XGBoost'}</p>
+                <p style="${P}">Accuracy: <strong>${(ai.waste_classifier.accuracy*100).toFixed(1)}%</strong></p>
+                <p style="${P}">Precision: <strong>${(ai.waste_classifier.precision*100).toFixed(1)}%</strong></p>
+                <p style="${P}">Recall: <strong>${(ai.waste_classifier.recall*100).toFixed(1)}%</strong></p>
+                <p style="${P}">F1 Score: <strong>${(ai.waste_classifier.f1_score*100).toFixed(1)}%</strong></p>
+            </div>`,
+            `<div style="background:#f0f9ff;border-left:4px solid #0ea5e9;border-radius:6px;padding:14px;">
+                <p style="font-size:10px;color:#0ea5e9;text-transform:uppercase;letter-spacing:1px;margin:0 0 4px 0;">Energy Predictor</p>
+                <p style="font-size:14px;font-weight:700;color:#0369a1;margin:0 0 10px 0;">${ai.energy_predictor.model_type || 'XGBoost'}</p>
+                <p style="${P}">R&#xB2; Score: <strong>${ai.energy_predictor.r2_score}</strong></p>
+                <p style="${P}">MAE: <strong>${ai.energy_predictor.mae_wh} Wh</strong></p>
+                <p style="${P}">RMSE: <strong>${ai.energy_predictor.rmse_wh} Wh</strong></p>
+            </div>`
+        )}
+
+        <h3 style="${H3}">&#x1F4CA; Classifier Shootout — TOPSIS Ranked</h3>
+        ${classRows.length ? tbl(['Model','Accuracy','F1 Score','Train Time','Rank'], classRows) : `<p style="${P}">No data.</p>`}
+
+        <h3 style="${H3}">&#x1F4CA; Regressor Shootout — TOPSIS Ranked</h3>
+        ${regRows.length ? tbl(['Model','R&#xB2; Score','MAE','Train Time','Rank'], regRows) : `<p style="${P}">No data.</p>`}
+
+        <!-- PARAM MAPPING -->
+        <h2 style="${H2}">&#x1F1EE;&#x1F1F3; PARAM Yuva-II Projection</h2>
+        ${twoCol(
+            `<div style="${CARD}text-align:center;border-top:4px solid #f59e0b;">
+                <p style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 6px 0;">Marconi100 (PM100)</p>
+                <p style="font-size:11px;color:#64748b;margin:2px 0;">IBM POWER9 + NVIDIA V100</p>
+                <p style="font-size:11px;color:#64748b;margin:2px 0;">980 nodes &#x2022; 32 PFlops</p>
+                <p style="font-size:11px;color:#64748b;margin:2px 0;">CINECA, Bologna, Italy</p>
+                <p style="font-size:18px;font-weight:700;color:#f59e0b;margin:10px 0 0 0;">${pm.mapping_summary.pm100_baseline_kwh} kWh</p>
+            </div>`,
+            `<div style="${CARD}text-align:center;border-top:4px solid #00d4aa;">
+                <p style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 6px 0;">PARAM Yuva-II</p>
+                <p style="font-size:11px;color:#64748b;margin:2px 0;">Intel Xeon E5-2670/2650 + Tesla M2090</p>
+                <p style="font-size:11px;color:#64748b;margin:2px 0;">376 nodes &#x2022; 524 TFlops</p>
+                <p style="font-size:11px;color:#64748b;margin:2px 0;">CDAC, Pune, India</p>
+                <p style="font-size:18px;font-weight:700;color:#00d4aa;margin:10px 0 0 0;">${pm.mapping_summary.param_baseline_kwh} kWh</p>
+            </div>`
+        )}
+        ${accentCard('#f59e0b','&#x1F30F; India Impact',
+            `<p style="font-size:13px;color:#475569;margin:0;">India's grid is <strong style="color:#ef4444;">${c.india_vs_italy.india_multiplier}x</strong> more carbon-intensive than Italy's. Projected PARAM savings: <strong style="color:#059669;">${pm.projected_savings.param_savings_kwh} kWh</strong> &#x2192; <strong style="color:#059669;">${pm.projected_savings.co2_saved_india_kg} kg CO&#x2082;</strong> prevented.</p>`
+        )}
+
+        <!-- CARBON -->
+        <h2 style="${H2}">&#x1F33F; Carbon Footprint Analysis</h2>
+        ${tbl(['Metric','Italy &#x1F1EE;&#x1F1F9;','India &#x1F1EE;&#x1F1F3;'],[
+            ['Baseline CO&#x2082;', `${c.baseline.co2_italy_kg} kg`, `${c.baseline.co2_india_kg} kg`],
+            ['CO&#x2082; Saved',   `${c.savings.co2_italy_kg} kg`,  `${c.savings.co2_india_kg} kg`],
+            ['Grid Factor',  '230 gCO&#x2082;/kWh', '720 gCO&#x2082;/kWh'],
         ])}
+        <h3 style="${H3}">&#x1F30D; Real-World Equivalences</h3>
+        ${threeCol(
+            `<div style="${CARD}text-align:center;"><p style="font-size:24px;margin:0;">&#x1F333;</p><p style="font-size:20px;font-weight:700;color:#059669;margin:4px 0;">${eq.trees_year}</p><p style="font-size:11px;color:#64748b;margin:0;">Trees planted/year</p></div>`,
+            `<div style="${CARD}text-align:center;"><p style="font-size:24px;margin:0;">&#x1F697;</p><p style="font-size:20px;font-weight:700;color:#059669;margin:4px 0;">${eq.driving_km_avoided}</p><p style="font-size:11px;color:#64748b;margin:0;">km driving avoided</p></div>`,
+            `<div style="${CARD}text-align:center;"><p style="font-size:24px;margin:0;">&#x1F4F1;</p><p style="font-size:20px;font-weight:700;color:#059669;margin:4px 0;">${eq.phone_charges_equivalent.toLocaleString()}</p><p style="font-size:11px;color:#64748b;margin:0;">Phone charges saved</p></div>`
+        )}
 
-        <!-- ═══ OPTIMIZATION STRATEGIES ═══ -->
-        <h2 style="${S.h2}">🔧 Energy Optimization Strategies</h2>
-        <div style="text-align: center; margin-bottom: 16px;">
-            ${strategyCard('🅿️', 'Core-Park', `${o.core_park.savings_kwh} kWh (${o.core_park.savings_percent}%)`, 'Power-gate idle cores')}
-            ${strategyCard('🔄', 'DVFS', `${o.dvfs.savings_kwh} kWh (${o.dvfs.savings_percent}%)`, `${o.dvfs.memory_bound_jobs.toLocaleString()} mem-bound jobs`)}
-            ${strategyCard('📦', 'Consolidation', `${o.consolidation.potential_savings_kwh} kWh`, `Bin-pack score: ${o.consolidation.score}`)}
-        </div>
-        <div style="${S.cardAccent('#059669')}">
-            <p style="font-size: 11px; color: #64748b; margin: 0 0 4px 0; text-transform: uppercase; letter-spacing: 1px;">🏆 Combined AlpaRodh Optimization</p>
-            <p style="font-size: 20px; font-weight: 700; color: #059669; margin: 0;">${o.combined.savings_kwh} kWh saved (${o.combined.savings_percent}%) → Optimized: ${o.combined.optimized_total_kwh} kWh</p>
-        </div>
-
-        <!-- ═══ AI MODELS ═══ -->
-        <h2 style="${S.h2}">🧠 AI Prediction Engine</h2>
-        <div style="display: flex; gap: 12px; margin-bottom: 16px;">
-            <div style="flex: 1; ${S.cardAccent('#6366f1')}">
-                <p style="font-size: 11px; color: #64748b; margin: 0 0 2px 0; text-transform: uppercase; letter-spacing: 1px;">Waste Classifier</p>
-                <p style="font-size: 14px; font-weight: 600; color: #6366f1; margin: 0 0 8px 0;">${ai.waste_classifier.model_type || 'Random Forest'}</p>
-                <p style="font-size: 13px; color: #475569; margin: 2px 0;">Accuracy: <strong>${(ai.waste_classifier.accuracy * 100).toFixed(1)}%</strong></p>
-                <p style="font-size: 13px; color: #475569; margin: 2px 0;">Precision: <strong>${(ai.waste_classifier.precision * 100).toFixed(1)}%</strong></p>
-                <p style="font-size: 13px; color: #475569; margin: 2px 0;">Recall: <strong>${(ai.waste_classifier.recall * 100).toFixed(1)}%</strong></p>
-                <p style="font-size: 13px; color: #475569; margin: 2px 0;">F1 Score: <strong>${(ai.waste_classifier.f1_score * 100).toFixed(1)}%</strong></p>
-            </div>
-            <div style="flex: 1; ${S.cardAccent('#0ea5e9')}">
-                <p style="font-size: 11px; color: #64748b; margin: 0 0 2px 0; text-transform: uppercase; letter-spacing: 1px;">Energy Predictor</p>
-                <p style="font-size: 14px; font-weight: 600; color: #0ea5e9; margin: 0 0 8px 0;">${ai.energy_predictor.model_type || 'Gradient Boosting'}</p>
-                <p style="font-size: 13px; color: #475569; margin: 2px 0;">R² Score: <strong>${ai.energy_predictor.r2_score}</strong></p>
-                <p style="font-size: 13px; color: #475569; margin: 2px 0;">MAE: <strong>${ai.energy_predictor.mae_wh} Wh</strong></p>
-                <p style="font-size: 13px; color: #475569; margin: 2px 0;">RMSE: <strong>${ai.energy_predictor.rmse_wh} Wh</strong></p>
-            </div>
-        </div>
-
-        <h3 style="${S.h3}">📊 12-Model Benchmarking — Classifiers (TOPSIS Ranked)</h3>
-        ${classRows.length ? styledTable(['Model', 'Accuracy', 'F1 Score', 'Train Time', 'Rank'], classRows) : '<p style="' + S.p + '">No classifier comparison data available.</p>'}
-
-        <h3 style="${S.h3}">📊 12-Model Benchmarking — Regressors (TOPSIS Ranked)</h3>
-        ${regRows.length ? styledTable(['Model', 'R² Score', 'MAE', 'Train Time', 'Rank'], regRows) : '<p style="' + S.p + '">No regressor comparison data available.</p>'}
-
-        <!-- ═══ PARAM MAPPING ═══ -->
-        <h2 style="${S.h2}">🇮🇳 PARAM Yuva-II Projection</h2>
-        <div style="display: flex; gap: 12px; margin-bottom: 16px; align-items: stretch;">
-            <div style="flex: 1; ${S.card} text-align: center; border-top: 4px solid #fbbf24;">
-                <p style="font-size: 14px; font-weight: 700; color: #0f172a; margin: 0 0 8px 0;">Marconi100 (PM100)</p>
-                <p style="font-size: 12px; color: #64748b; margin: 2px 0;">IBM POWER9 + NVIDIA V100</p>
-                <p style="font-size: 12px; color: #64748b; margin: 2px 0;">980 nodes • 32 PFlops</p>
-                <p style="font-size: 12px; color: #64748b; margin: 2px 0;">📍 CINECA, Bologna, Italy</p>
-                <p style="font-size: 20px; font-weight: 700; color: #f59e0b; margin: 12px 0 0 0;">${pm.mapping_summary.pm100_baseline_kwh} kWh</p>
-            </div>
-            <div style="flex: 0 0 40px; display: flex; align-items: center; justify-content: center; font-size: 24px; color: #94a3b8;">→</div>
-            <div style="flex: 1; ${S.card} text-align: center; border-top: 4px solid #00f5d4;">
-                <p style="font-size: 14px; font-weight: 700; color: #0f172a; margin: 0 0 8px 0;">PARAM Yuva-II</p>
-                <p style="font-size: 12px; color: #64748b; margin: 2px 0;">Intel Xeon E5-2670/2650 + Tesla M2090</p>
-                <p style="font-size: 12px; color: #64748b; margin: 2px 0;">376 nodes • 524 TFlops</p>
-                <p style="font-size: 12px; color: #64748b; margin: 2px 0;">📍 CDAC, Pune, India</p>
-                <p style="font-size: 20px; font-weight: 700; color: #00d4aa; margin: 12px 0 0 0;">${pm.mapping_summary.param_baseline_kwh} kWh</p>
-            </div>
-        </div>
-        <div style="${S.cardAccent('#f59e0b')}">
-            <p style="font-size: 13px; color: #475569; margin: 0;">🌏 <strong>India Impact:</strong> India's grid is <strong style="color: #ef4444;">${c.india_vs_italy.india_multiplier}x</strong> more carbon-intensive than Italy's. Projected PARAM savings: <strong style="color: #059669;">${pm.projected_savings.param_savings_kwh} kWh</strong> → <strong style="color: #059669;">${pm.projected_savings.co2_saved_india_kg} kg CO₂</strong> prevented.</p>
-        </div>
-
-        <!-- ═══ CARBON FOOTPRINT ═══ -->
-        <h2 style="${S.h2}">🌿 Carbon Footprint Analysis</h2>
-        ${styledTable(['Metric', 'Italy 🇮🇹', 'India 🇮🇳'], [
-            ['Baseline CO₂', `${c.baseline.co2_italy_kg} kg`, `${c.baseline.co2_india_kg} kg`],
-            ['CO₂ Saved', `${c.savings.co2_italy_kg} kg`, `${c.savings.co2_india_kg} kg`],
-            ['Grid Factor', `${c.india_vs_italy.italy ? c.india_vs_italy.italy.co2_factor : 230} gCO₂/kWh`, `${c.india_vs_italy.india ? c.india_vs_italy.india.co2_factor : 720} gCO₂/kWh`],
-        ])}
-
-        <h3 style="${S.h3}">🌍 Real-World Equivalences</h3>
-        <div style="display: flex; gap: 12px; margin-bottom: 20px;">
-            <div style="flex: 1; ${S.card} text-align: center;">
-                <p style="font-size: 28px; margin: 0;">🌳</p>
-                <p style="font-size: 22px; font-weight: 700; color: #059669; margin: 4px 0;">${eq.trees_year}</p>
-                <p style="font-size: 12px; color: #64748b; margin: 0;">Trees planted/year</p>
-            </div>
-            <div style="flex: 1; ${S.card} text-align: center;">
-                <p style="font-size: 28px; margin: 0;">🚗</p>
-                <p style="font-size: 22px; font-weight: 700; color: #059669; margin: 4px 0;">${eq.driving_km_avoided}</p>
-                <p style="font-size: 12px; color: #64748b; margin: 0;">km driving avoided</p>
-            </div>
-            <div style="flex: 1; ${S.card} text-align: center;">
-                <p style="font-size: 28px; margin: 0;">📱</p>
-                <p style="font-size: 22px; font-weight: 700; color: #059669; margin: 4px 0;">${eq.phone_charges_equivalent.toLocaleString()}</p>
-                <p style="font-size: 12px; color: #64748b; margin: 0;">Phone charges saved</p>
-            </div>
-        </div>
-
-        <!-- ═══ LIVE PREDICTION (if available) ═══ -->
+        <!-- LIVE PREDICTION -->
         ${predictionSection}
 
-        <!-- ═══ EXPLANATIONS ═══ -->
-        <h2 style="${S.h2}">🌐 Key Concepts Explained</h2>
-        <div style="${S.card}">
-            <p style="${S.p}"><strong>🔌 Variable Resistance:</strong> ${translations.variable_resistance}</p>
-            <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 10px 0;">
-            <p style="${S.p}"><strong>⚠️ Core Mismatch:</strong> ${translations.core_mismatch}</p>
-            <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 10px 0;">
-            <p style="${S.p}"><strong>📈 AlpaRodh Coefficient:</strong> ${translations.alpa_coefficient}</p>
-            <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 10px 0;">
-            <p style="${S.p}"><strong>🤖 AI Prediction:</strong> ${translations.ai_prediction}</p>
-            <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 10px 0;">
-            <p style="${S.p}"><strong>🌏 India Impact:</strong> ${translations.india_impact}</p>
+        <!-- KEY CONCEPTS -->
+        <h2 style="${H2}">&#x1F310; Key Concepts Explained</h2>
+        <div style="${CARD}">
+            <p style="${P}"><strong>&#x1F50C; Variable Resistance:</strong> ${translations.variable_resistance}</p>
+            <hr style="border:none;border-top:1px solid #e2e8f0;margin:10px 0;">
+            <p style="${P}"><strong>&#x26A0;&#xFE0F; Core Mismatch:</strong> ${translations.core_mismatch}</p>
+            <hr style="border:none;border-top:1px solid #e2e8f0;margin:10px 0;">
+            <p style="${P}"><strong>&#x1F4C8; AlpaRodh Coefficient:</strong> ${translations.alpa_coefficient}</p>
+            <hr style="border:none;border-top:1px solid #e2e8f0;margin:10px 0;">
+            <p style="${P}"><strong>&#x1F916; AI Prediction:</strong> ${translations.ai_prediction}</p>
+            <hr style="border:none;border-top:1px solid #e2e8f0;margin:10px 0;">
+            <p style="${P}"><strong>&#x1F30F; India Impact:</strong> ${translations.india_impact}</p>
         </div>
 
-        <!-- ═══ FOOTER ═══ -->
-        <div style="margin-top: 30px; padding-top: 16px; border-top: 2px solid #e2e8f0; text-align: center;">
-            <p style="font-size: 14px; font-weight: 600; color: #0f172a; margin: 0;">अल्परोध AlpaRodh v1.0</p>
-            <p style="font-size: 11px; color: #94a3b8; margin: 4px 0 0 0;">AI-Driven Variable Resistance Reduction for India's Supercomputers</p>
-            <p style="font-size: 11px; color: #94a3b8; margin: 2px 0 0 0;">Dataset: PM100 (Marconi100) • Target: PARAM Yuva-II, CDAC Pune</p>
-            <p style="font-size: 10px; color: #cbd5e1; margin: 8px 0 0 0;">Report generated: ${timestamp}</p>
+        <!-- FOOTER -->
+        <div style="margin-top:28px;padding-top:14px;border-top:2px solid #e2e8f0;text-align:center;">
+            <p style="font-size:13px;font-weight:700;color:#0f172a;margin:0;">&#x0905;&#x0932;&#x094D;&#x092A;&#x0930;&#x094B;&#x0927; AlpaRodh v1.0</p>
+            <p style="font-size:11px;color:#94a3b8;margin:4px 0 0 0;">AI-Driven Variable Resistance Reduction for India's Supercomputers</p>
+            <p style="font-size:11px;color:#94a3b8;margin:2px 0 0 0;">Dataset: PM100 (Marconi100) &#x2022; Target: PARAM Yuva-II, CDAC Pune</p>
+            <p style="font-size:10px;color:#cbd5e1;margin:8px 0 0 0;">Report generated: ${timestamp}</p>
         </div>
 
     </div>`;
 }
+
