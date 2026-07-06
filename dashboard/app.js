@@ -164,7 +164,8 @@ const DEFAULT_DATA = {
             conclusion_efficient: "हे काम कार्यक्षमतेने चालत आहे. अल्परोध सुचवतो की कमी ग्रिड-इंटेन्सिटीच्या वेळी हे शेड्यूल करा.",
             lang_label: "मराठी",
         },
-    };
+    },
+};
 
 // ═══ GLOBALS ══════════════════════════════════════════════════════════════════
 const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
@@ -286,7 +287,7 @@ function openPrintWindow(reportHTML) {
 </body></html>`);
     win.document.close();
 }
-});
+
 
 // ═══ STAT COUNTERS ═══════════════════════════════════════════════════════════
 function animateCounter(element, target, decimals = 2, duration = 2000) {
