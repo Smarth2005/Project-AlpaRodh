@@ -138,48 +138,88 @@ document.addEventListener("DOMContentLoaded", async () => {
     setupLivePredictor();
 
     const pdfBtn = document.getElementById("btn-download-pdf");
-    pdfBtn.addEventListener("click", async () => {
-        if (!window.html2pdf) {
-            alert("PDF library is still loading (or failed to load — check your internet connection). Please try again in a moment.");
-            return;
-        }
-
-        const originalBtnText = pdfBtn.textContent;
+    pdfBtn.addEventListener("click", () => {
+        const originalText = pdfBtn.textContent;
         pdfBtn.disabled = true;
-        pdfBtn.textContent = "⏳ Generating PDF...";
+        pdfBtn.textContent = "⏳ Building Report...";
 
         try {
             const reportHTML = buildPDFReport();
 
-            // Create a temporary container, append to body for proper rendering
-            const container = document.createElement("div");
-            container.id = "pdf-render-container";
-            container.style.cssText = "position: absolute; left: -9999px; top: 0; width: 800px; background: white;";
-            container.innerHTML = reportHTML;
-            document.body.appendChild(container);
+            // Open a dedicated print-preview window — uses native browser rendering,
+            // 100% reliable unlike html2canvas which fails on offscreen elements.
+            const win = window.open("", "AlpaRodh_Report", "width=900,height=680");
+            if (!win) {
+                alert("Popup was blocked! Please allow popups for this site and try again.");
+                return;
+            }
 
-            const opt = {
-                margin:       [0.3, 0.3, 0.3, 0.3],
-                filename:     'AlpaRodh_Report.pdf',
-                image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2, useCORS: true, logging: false },
-                jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' },
-                pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
-            };
-
-            await window.html2pdf().set(opt).from(container).save();
-
-            // Cleanup
-            document.body.removeChild(container);
+            win.document.write(`<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>AlpaRodh Report</title>
+<style>
+  @page { margin: 0.5in; size: A4 portrait; }
+  @media print {
+    body { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    .no-print { display: none !important; }
+    .print-wrapper { box-shadow: none !important; margin: 0 !important; padding: 0 !important; }
+  }
+  @media screen {
+    body { margin: 0; padding: 0; background: #f1f5f9; font-family: Arial, sans-serif; }
+    .no-print {
+      position: sticky; top: 0; z-index: 100;
+      background: #0f172a; color: white;
+      padding: 12px 24px; text-align: center;
+      border-bottom: 2px solid #00f5d4;
+    }
+    .no-print p { margin: 0 0 8px 0; font-size: 13px; color: #94a3b8; }
+    .save-btn {
+      background: #00f5d4; color: #0f172a; border: none;
+      padding: 10px 28px; font-size: 15px; font-weight: 700;
+      border-radius: 6px; cursor: pointer; margin: 0 6px;
+      transition: opacity 0.2s;
+    }
+    .save-btn:hover { opacity: 0.85; }
+    .close-btn {
+      background: transparent; color: #94a3b8; border: 1px solid #334155;
+      padding: 10px 18px; font-size: 14px; border-radius: 6px;
+      cursor: pointer; margin: 0 6px;
+    }
+    .print-wrapper {
+      max-width: 820px; margin: 24px auto 40px auto;
+      background: white; padding: 30px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+      border-radius: 8px;
+    }
+  }
+</style>
+</head>
+<body>
+<div class="no-print">
+  <p>&#x1F4C4; Your AlpaRodh report is ready — click below to save as PDF</p>
+  <button class="save-btn" onclick="window.print()">&#x1F5A8;&#xFE0F; Save as PDF (Ctrl+P)</button>
+  <button class="close-btn" onclick="window.close()">Close</button>
+</div>
+<div class="print-wrapper">
+${reportHTML}
+</div>
+<script>
+  // Auto-trigger print after a short render delay
+  window.onload = function() {
+    setTimeout(function() { window.print(); }, 600);
+  };
+</script>
+</body>
+</html>`);
+            win.document.close();
         } catch (err) {
-            console.error("PDF generation failed:", err);
-            alert("Sorry, the PDF could not be generated: " + err.message);
-            // Cleanup on error too
-            const leftover = document.getElementById("pdf-render-container");
-            if (leftover) document.body.removeChild(leftover);
+            console.error("Report generation failed:", err);
+            alert("Could not generate report: " + err.message);
         } finally {
             pdfBtn.disabled = false;
-            pdfBtn.textContent = originalBtnText;
+            pdfBtn.textContent = originalText;
         }
     });
 });
