@@ -106,31 +106,51 @@ AlpaRodh is an end-to-end AI framework that:
 
 ---
 
-## 🤖 AI/ML Engine
+## 🤖 AI/ML Engine & TOPSIS Evaluation
 
-AlpaRodh trains and rigorously compares **12 models** using TOPSIS multi-criteria decision-making:
+AlpaRodh trains and rigorously compares **12 models** using TOPSIS (Technique for Order of Preference by Similarity to Ideal Solution) multi-criteria decision-making. 
 
-### Waste Classifiers — *Is this job wasteful?*
-```
-🥇 Random Forest        ── Accuracy: 97.4%  │ F1: 92.2%  │ Precision: 95.2%
-🥈 XGBoost              ── Accuracy: 96.8%  │ F1: 91.5%  │ Precision: 94.1%
-🥉 Gradient Boosting    ── Accuracy: 96.1%  │ F1: 90.8%  │ Precision: 93.4%
-   MLP Neural Network   ── Accuracy: 95.3%  │ F1: 89.7%  │ Precision: 92.0%
-   SVM                  ── Accuracy: 94.7%  │ F1: 88.9%  │ Precision: 91.3%
-   Logistic Regression  ── Accuracy: 91.2%  │ F1: 85.1%  │ Precision: 87.6%
-```
+### Dataset Features & Feature Engineering
 
-### Energy Predictors — *How many Wh will this job use?*
-```
-🥇 Gradient Boosting    ── R²: 0.8915 │ MAE: 0.21 Wh │ RMSE: 1.45 Wh
-🥈 XGBoost              ── R²: 0.8801 │ MAE: 0.24 Wh │ RMSE: 1.58 Wh
-🥉 Random Forest        ── R²: 0.8634 │ MAE: 0.28 Wh │ RMSE: 1.72 Wh
-   MLP Neural Network   ── R²: 0.8412 │ MAE: 0.31 Wh │ RMSE: 1.89 Wh
-   SVR                  ── R²: 0.7923 │ MAE: 0.38 Wh │ RMSE: 2.14 Wh
-   Ridge Regression     ── R²: 0.7341 │ MAE: 0.44 Wh │ RMSE: 2.51 Wh
-```
+The original PM100 dataset provides the following raw telemetry columns:
+*   `node_power_consumption`, `cpu_power_consumption`, `mem_power_consumption`
+*   `num_cores_req` (cores requested), `num_cores_alloc` (cores allocated)
+*   `run_time`, `num_gpus_alloc`
 
-### Top Predictive Features (Importance)
+**⚠️ Data Leakage Prevention:**
+To prevent the Waste Classifier from simply doing basic math (`alloc > req`) and achieving trivial 100% accuracy, we heavily restrict its features.
+- **Features for Classifier:** `node_pwr_w`, `cpu_pwr_w`, `mem_pwr_w`, `cpu_to_node_ratio`, `mem_to_cpu_ratio`, `power_per_core`, `run_time`, `log_run_time`, `num_gpus_alloc`. *(No core allocation data is provided).*
+- **Features for Regressor:** Uses all of the above, PLUS `num_cores_req`, `num_cores_alloc`, `core_mismatch`, and `mismatch_ratio` to accurately forecast total energy (`energy_wh`).
+
+### TABLE I: Waste Classifier TOPSIS Comparison (Classification)
+Target: *Predict if a job is wasteful (1) or efficient (0) before it runs.*
+
+| Model | Accuracy | Precision | Recall | F1 Score | Training Time | TOPSIS Score | Rank |
+|-------|----------|-----------|--------|----------|---------------|--------------|:----:|
+| *Weights ($w_j$)* | *1* | *1* | *1* | *1* | *1* | | |
+| *Impacts* | *+* | *+* | *+* | *+* | *-* | | |
+| **XGBoost** 🌟 | **0.9363** | 0.7368 | 0.8770 | **0.8008** | **2.91s** | **0.9160** | **1** |
+| Random Forest | 0.9158 | 0.6618 | 0.8655 | 0.7501 | 12.87s | 0.8460 | 2 |
+| MLP (Neural Net) | 0.9296 | 0.8410 | 0.6379 | 0.7255 | 47.24s | 0.6680 | 3 |
+| Logistic Regression | 0.5944 | 0.2100 | 0.6439 | 0.3167 | 0.52s | 0.6205 | 4 |
+| SVM (RBF) | 0.4676 | 0.1845 | 0.7745 | 0.2981 | 7.10s | 0.5942 | 5 |
+| Gradient Boosting | 0.9440 | 0.8877 | 0.7059 | 0.7864 | 119.72s | 0.3885 | 6 |
+
+### TABLE II: Energy Predictor TOPSIS Comparison (Regression)
+Target: *Predict total dynamic energy consumption (`energy_wh`).*
+
+| Model | MAE (Wh) | RMSE (Wh) | R² Score | Training Time | TOPSIS Score | Rank |
+|-------|----------|-----------|----------|---------------|--------------|:----:|
+| *Weights ($w_j$)* | *1* | *1* | *1* | *1* | | |
+| *Impacts* | *-* | *-* | *+* | *-* | | |
+| **XGBoost** 🌟 | **0.0772** | **0.3649** | **0.9980** | **4.38s** | **0.9817** | **1** |
+| MLP (Neural Net) | 0.0602 | 0.2416 | 0.9991 | 56.57s | 0.8536 | 2 |
+| Gradient Boosting | 0.0659 | 0.2607 | 0.9990 | 140.91s | 0.6809 | 3 |
+| Random Forest | 0.0734 | 0.3421 | 0.9983 | 203.37s | 0.5890 | 4 |
+| SVR (RBF) | 0.8422 | 4.4585 | 0.7029 | 11.56s | 0.5553 | 5 |
+| Ridge Regression | 1.8048 | 5.4463 | 0.5566 | 0.07s | 0.4080 | 6 |
+
+### Top Predictive Features (SHAP-inspired Importance)
 ```
 mismatch_ratio     ████████████████████████████████ 34.21%
 core_mismatch      ████████████████████             21.56%
