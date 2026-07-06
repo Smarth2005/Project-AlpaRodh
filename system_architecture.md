@@ -1,73 +1,85 @@
-# AlpaRodh System Architecture
+# 🏗️ System Architecture: AlpaRodh
 
-This diagram illustrates the precise data flow and module structure of the AlpaRodh framework, strictly based on the implemented codebase.
+This document outlines the detailed system architecture and data flow of the AlpaRodh framework, specifically targeting the translation of telemetry from the **PM100 (Marconi100)** supercomputer to India's **PARAM Yuva-II** supercomputer.
+
+## 📊 End-to-End Data Flow
+
+The following Mermaid diagram illustrates the complete pipeline — from data ingestion to real-time AI prediction and carbon footprint mapping.
 
 ```mermaid
-flowchart TB
-    subgraph Data Layer
-        A[(PM100 Dataset\njob_table.parquet)] -->|Ingest| B(data_loader.py)
-        B -->|Flatten Nested Arrays\nmW to W Conversion| C[Cleaned Telemetry DataFrame]
-    end
-
-    subgraph Core Analysis Engine
-        C --> D(baseline.py)
-        D -->|Compute total_kwh, static_floor\nDetect Core Mismatches| E[Baseline Metrics]
-        
-        C --> F(optimizer.py)
-        F -->|Strategy 1| G[Core-Park\nPower-gate idle cores]
-        F -->|Strategy 2| H[DVFS\nFreq scale memory-bound]
-        F -->|Strategy 3| I[Job Consolidation Score]
-        G & H & I --> J[Combined Optimization\nSavings Calculation]
-    end
-
-    subgraph AI/ML Predictor Engine
-        C --> K(ai_predictor.py)
-        K --> L[Feature Engineering\nmismatch_ratio, power_per_core]
-        L --> M[Waste Classifier\nRandomForest]
-        L --> N[Energy Predictor\nGradientBoosting]
-        M -->|Save Joblib| O[(waste_classifier.joblib)]
-        N -->|Save Joblib| P[(energy_predictor.joblib)]
-    end
-
-    subgraph Projection & Impact Mapping
-        J --> Q(param_mapper.py)
-        Q -->|CPU vs GPU Node Classification\nTDP Scaling Ratios| R[PARAM Yuva-II\nProjected Metrics]
-        
-        R --> S(carbon_footprint.py)
-        S -->|India Grid vs Italy Grid| T[CO2 Emissions Saved]
-        S --> U[AlpaRodh Coefficient ηα]
-        S --> V[Green Score A-F & Equivalences]
-    end
-
-    subgraph Orchestration & Export
-        D & J & K & Q & S --> W(run_analysis.py)
-        W --> X(translator.py)
-        X -->|Template Engine\nen, hi, mr| Y[Multilingual Report]
-        Y -->|JSON Serialization| Z[(dashboard/data.json)]
-    end
-
-    subgraph Visualization Frontend
-        Z --> UI(dashboard/app.js)
-        UI -->|Chart.js| UI_Charts[Energy, Features, Green Score Charts]
-        UI -->|DOM Updates| UI_Lang[Multilingual View Switching]
-        UI --> UI_Cards[Stats Cards & Glassmorphic UI]
-    end
-
+graph TD
     %% Styling
-    classDef file fill:#2d3748,stroke:#4a5568,stroke-width:2px,color:#f7fafc
-    classDef data fill:#2b6cb0,stroke:#2c5282,stroke-width:2px,color:#ebf8ff
-    classDef process fill:#38a169,stroke:#276749,stroke-width:2px,color:#f0fff4
-    classDef frontend fill:#d53f8c,stroke:#97266d,stroke-width:2px,color:#fbb6ce
+    classDef dataset fill:#1e293b,stroke:#94a3b8,stroke-width:2px,color:#f1f5f9
+    classDef process fill:#0f172a,stroke:#00f5d4,stroke-width:2px,color:#00f5d4
+    classDef model fill:#312e81,stroke:#818cf8,stroke-width:2px,color:#e0e7ff
+    classDef target fill:#064e3b,stroke:#34d399,stroke-width:2px,color:#d1fae5
+    classDef output fill:#4c1d95,stroke:#a78bfa,stroke-width:2px,color:#ede9fe
+    classDef UI fill:#831843,stroke:#f472b6,stroke-width:2px,color:#fce7f3
 
-    class B,D,F,K,Q,S,W,X file
-    class A,C,O,P,Z data
-    class G,H,I,M,N,L,R,T,U,V,Y process
-    class UI,UI_Charts,UI_Lang,UI_Cards frontend
+    %% 1. Ingestion Phase
+    subgraph Data_Ingestion ["📥 1. Telemetry Ingestion"]
+        A[PM100 Dataset<br/>231,238 Jobs]:::dataset --> B(data_loader.py<br/>Cleaning & Preprocessing):::process
+        B --> C[Cleaned Job Table]:::dataset
+    end
+
+    %% 2. Baseline & Mapping Phase
+    subgraph Baseline_Mapping ["🧮 2. Baseline & Mapping"]
+        C --> D(baseline.py<br/>Calculate Static & Variable Power):::process
+        D --> E(param_mapper.py<br/>Map PM100 ➔ PARAM Yuva-II):::process
+        E --> F[PARAM Target Scaled Baseline]:::target
+    end
+
+    %% 3. AI Training Phase
+    subgraph AI_Engine ["🤖 3. AI / ML Engine"]
+        F --> G(ai_predictor.py<br/>Train 12 Models):::model
+        G --> H{TOPSIS Ranking}:::model
+        H --> |Best Classifier| I(Waste Classifier<br/>Random Forest):::model
+        H --> |Best Regressor| J(Energy Predictor<br/>Gradient Boosting):::model
+    end
+
+    %% 4. Optimization Phase
+    subgraph Optimization ["⚡ 4. Optimization Strategies"]
+        I -.-> K(optimizer.py<br/>Apply Core-Park):::process
+        J -.-> L(optimizer.py<br/>Apply DVFS):::process
+        I -.-> M(optimizer.py<br/>Job Consolidation):::process
+    end
+
+    %% 5. Carbon Footprint Engine
+    subgraph Environment ["🌿 5. Environmental Mapping"]
+        K & L & M --> N(carbon_footprint.py<br/>Apply India Grid Factor):::target
+        N --> O[AlpaRodh Coefficient<br/>Green Score A-F]:::target
+    end
+
+    %% 6. Deployment / UI
+    subgraph Deployment ["🌐 6. Deployment & Dashboard"]
+        I & J --> P[[FastAPI Backend<br/>api.py]]:::output
+        O --> P
+        P <--> Q{{Interactive Dashboard<br/>Live Job Prediction}}:::UI
+        Q --> R[Multilingual Job Report<br/>PDF Export]:::UI
+    end
 ```
 
-### Flow Summary:
-1. **Data Layer**: Raw telemetry is standardized and cleaned by the `data_loader.py`.
-2. **Analysis**: `baseline.py` isolates variable resistance. `optimizer.py` applies three independent physical logic strategies.
-3. **AI Pipeline**: Using the cleaned data, `ai_predictor.py` engineers composite features and trains the `scikit-learn` estimators to predict waste beforehand.
-4. **Mapping & Carbon**: `param_mapper.py` transposes the Italian hardware TDPs into Indian equivalents. `carbon_footprint.py` computes the localized environmental impact.
-5. **UI & Export**: `run_analysis.py` weaves it all together, applies `translator.py` for Layman accessibility, and outputs a strict JSON file that the web frontend consumes natively.
+---
+
+## 🧩 Core Modules Explained
+
+### 1. `data_loader.py` & `baseline.py`
+The foundation of the pipeline. It ingests historical telemetry, isolating **static resistance** (idle power, fans) from **variable resistance** (dynamic CPU/GPU power draw). AlpaRodh's primary objective is eliminating unnecessary variable resistance caused by over-allocation.
+
+### 2. `ai_predictor.py` & `topsis.py`
+Instead of relying on a single algorithm, AlpaRodh trains an ensemble of 6 classifiers and 6 regressors. It then utilizes **TOPSIS (Technique for Order of Preference by Similarity to Ideal Solution)** to mathematically rank the models based on a blend of accuracy, precision, F1-score, and computational overhead.
+
+### 3. `param_mapper.py`
+Since AlpaRodh specifically targets CDAC Pune's **PARAM Yuva-II**, this module applies a calculated scaling factor (0.6054) to map the PM100 data to the PARAM architecture, considering differences in total nodes, core counts, and GPU presence.
+
+### 4. `optimizer.py`
+The execution arm of the framework, applying three specific hardware-level strategies:
+- **Core-Park:** Power-gates unused cores on partially utilized nodes.
+- **DVFS (Dynamic Voltage & Frequency Scaling):** Lowers CPU frequency for memory-bound jobs.
+- **Consolidation:** Generates a bin-packing score to co-schedule smaller jobs.
+
+### 5. `carbon_footprint.py`
+Translates raw kWh savings into tangible environmental metrics. Crucially, it applies the **India Grid Carbon Factor (720 gCO₂/kWh)**, highlighting why saving power in India is >3x more environmentally impactful than saving power on European grids.
+
+### 6. `api.py` & `dashboard/`
+The bridge between theoretical analysis and real-world interaction. The FastAPI backend serves the pre-trained ML models, allowing users to enter custom job parameters into the interactive web dashboard and receive instantaneous AI predictions and Green Score certifications.

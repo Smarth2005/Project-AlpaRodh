@@ -508,6 +508,7 @@ function renderGreenScoreChart() {
                                 text: label,
                                 fillStyle: dataset.backgroundColor[i],
                                 strokeStyle: dataset.backgroundColor[i],
+                                fontColor: "#f1f5f9", // <--- explicitly set white/light font color
                                 lineWidth: 0,
                                 hidden: !chart.getDataVisibility(i),
                                 index: i,
