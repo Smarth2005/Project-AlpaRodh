@@ -168,8 +168,6 @@ This answers: *"For every 1 kWh of waste AlpaRodh eliminates, how much CO₂ is 
 ## 🌿 Green Score System
 
 Every job analyzed receives an environmental grade:
-
-<div align="center">
   
 | Grade | CO₂ per Job | Verdict | Recommended Action |
 |:-----:|-------------|---------|-------------------|
@@ -180,13 +178,10 @@ Every job analyzed receives an environmental grade:
 | **E** | ≤ 10.0 g | Poor | Priority optimization target |
 | **F** | > 10.0 g | Critical | Halt and redesign |
 
-</div>
-
 ---
 
 ## 📊 Key Results
 
-<div align="center">
   
 | 🏷️ Metric | 📈 Value | 🌍 Context |
 |-----------|---------|----------|
@@ -199,8 +194,6 @@ Every job analyzed receives an environmental grade:
 | AlpaRodh Coefficient | **ηα = 7.3241 gCO₂/kWh** | Environmental ROO |
 | Models Compared | **6 classifiers + 6 regressors** | TOPSIS multi-criteria ranking |
 | PARAM Yuva-II Projection | **24.10 kWh saved** | India-specific impact |
-
-</div>
 
 ---
 
