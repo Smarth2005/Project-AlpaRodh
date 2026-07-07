@@ -81,23 +81,9 @@ AlpaRodh is an end-to-end AI framework that:
 
 ## 🏗️ Architecture
 
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│                       AlpaRodh Pipeline                             │
-│                                                                     │
-│   PM100 Dataset           Analysis Core            Dashboard        │
-│   ┌──────────┐    ┌───────────────────────┐   ┌──────────────┐    │
-│   │ 231,238  │───▶│  data_loader.py       │   │  index.html  │    │
-│   │ job logs │    │  baseline.py          │──▶│  app.js      │    │
-│   └──────────┘    │  optimizer.py         │   │  style.css   │    │
-│                   │  ai_predictor.py      │   └──────┬───────┘    │
-│   PARAM Mapping   │  carbon_footprint.py  │          │             │
-│   ┌──────────┐    │  param_mapper.py      │   FastAPI Backend      │
-│   │ Yuva-II  │◀───│  topsis.py           │   ┌──────────────┐    │
-│   │ India 🇮🇳 │    │  translator.py       │◀──│   api.py     │    │
-│   └──────────┘    └───────────────────────┘   └──────────────┘    │
-└─────────────────────────────────────────────────────────────────────┘
-```
+<div align="center">
+  <img src="assets/system_architecture.svg" alt="AlpaRodh System Architecture" width="100%"/>
+</div>
 
 ### PARAM Yuva-II — Target System (CDAC Pune)
 

@@ -8,55 +8,65 @@ The following Mermaid diagram illustrates the complete pipeline — from data in
 
 ```mermaid
 graph TD
-    %% Styling
-    classDef dataset fill:#1e293b,stroke:#94a3b8,stroke-width:2px,color:#f1f5f9
-    classDef process fill:#0f172a,stroke:#00f5d4,stroke-width:2px,color:#00f5d4
-    classDef model fill:#312e81,stroke:#818cf8,stroke-width:2px,color:#e0e7ff
-    classDef target fill:#064e3b,stroke:#34d399,stroke-width:2px,color:#d1fae5
-    classDef output fill:#4c1d95,stroke:#a78bfa,stroke-width:2px,color:#ede9fe
-    classDef UI fill:#831843,stroke:#f472b6,stroke-width:2px,color:#fce7f3
+    %% Bright & Sophisticated Inner Box Styling (Font Size 12px)
+    classDef dataset fill:#E0F2FE,stroke:#0EA5E9,stroke-width:1px,color:#0C4A6E,font-size:12px
+    classDef baseline fill:#CCFBF1,stroke:#0D9488,stroke-width:1px,color:#115E59,font-size:12px
+    classDef process fill:#EEF2FF,stroke:#6366F1,stroke-width:1px,color:#3730A3,font-size:12px
+    classDef model fill:#FFE4E6,stroke:#F43F5E,stroke-width:1px,color:#881337,font-size:12px
+    classDef target fill:#D1FAE5,stroke:#10B981,stroke-width:1px,color:#064E3B,font-size:12px
+    classDef output fill:#F3F4F6,stroke:#6B7280,stroke-width:1px,color:#1F2937,font-size:12px
+    classDef UI fill:#FEF3C7,stroke:#F59E0B,stroke-width:1px,color:#92400E,font-size:12px
+
+    %% Edge Styling (Font Size 12px)
+    linkStyle default font-size:12px,stroke:#64748B,stroke-width:2px;
 
     %% 1. Ingestion Phase
     subgraph Data_Ingestion ["📥 1. Telemetry Ingestion"]
-        A[PM100 Dataset<br/>231,238 Jobs]:::dataset --> B(data_loader.py<br/>Cleaning & Preprocessing):::process
-        B --> C[Cleaned Job Table]:::dataset
+        A[PM100 Raw Dataset<br/>231,238 Active Jobs]:::dataset -->|Raw Telemetry| B(data_loader.py<br/>Clean & Preprocess):::dataset
+        B -->|Sanitized Data| C[Cleaned Job Table<br/>Ready for Mapping]:::dataset
     end
+    style Data_Ingestion fill:none,stroke:#94A3B8,stroke-width:2px,stroke-dasharray: 5 5
 
     %% 2. Baseline & Mapping Phase
     subgraph Baseline_Mapping ["🧮 2. Baseline & Mapping"]
-        C --> D(baseline.py<br/>Calculate Static & Variable Power):::process
-        D --> E(param_mapper.py<br/>Map PM100 ➔ PARAM Yuva-II):::process
-        E --> F[PARAM Target Scaled Baseline]:::target
+        C -->|Job Stats| D(baseline.py<br/>Static/Var Power Calc):::baseline
+        D -->|Power Metrics| E(param_mapper.py<br/>Map to PARAM Yuva-II):::baseline
+        E -->|Mapped Workloads| F[Target Scaled Baseline<br/>PARAM Architecture]:::baseline
     end
+    style Baseline_Mapping fill:none,stroke:#94A3B8,stroke-width:2px,stroke-dasharray: 5 5
 
     %% 3. AI Training Phase
     subgraph AI_Engine ["🤖 3. AI / ML Engine"]
-        F --> G(ai_predictor.py<br/>Train 12 Models):::model
-        G --> H{TOPSIS Ranking}:::model
-        H --> |Best Classifier| I(Waste Classifier<br/>Random Forest):::model
-        H --> |Best Regressor| J(Energy Predictor<br/>Gradient Boosting):::model
+        F -->|Training Data| G(ai_predictor.py<br/>Train Ensemble Models):::model
+        G -->|Model Metrics| H{TOPSIS Algorithm<br/>Mathematical Ranking}:::model
+        H -->|Best Classifier| I(Waste Classifier<br/>Random Forest Model):::model
+        H -->|Best Regressor| J(Energy Predictor<br/>Gradient Boosting):::model
     end
+    style AI_Engine fill:none,stroke:#94A3B8,stroke-width:2px,stroke-dasharray: 5 5
 
     %% 4. Optimization Phase
     subgraph Optimization ["⚡ 4. Optimization Strategies"]
-        I -.-> K(optimizer.py<br/>Apply Core-Park):::process
-        J -.-> L(optimizer.py<br/>Apply DVFS):::process
-        I -.-> M(optimizer.py<br/>Job Consolidation):::process
+        I -.->|Waste Class| K(optimizer.py<br/>Apply Core-Park Tech):::process
+        J -.->|Energy Pred| L(optimizer.py<br/>Apply DVFS Scaling):::process
+        I -.->|Underutilization| M(optimizer.py<br/>Job Consolidation):::process
     end
+    style Optimization fill:none,stroke:#94A3B8,stroke-width:2px,stroke-dasharray: 5 5
 
     %% 5. Carbon Footprint Engine
     subgraph Environment ["🌿 5. Environmental Mapping"]
-        K & L & M --> N(carbon_footprint.py<br/>Apply India Grid Factor):::target
-        N --> O[AlpaRodh Coefficient<br/>Green Score A-F]:::target
+        K & L & M -->|Optimized kWh| N(carbon_footprint.py<br/>Apply IN Grid Factor):::target
+        N -->|Carbon Impact| O[AlpaRodh Coefficient<br/>Green Score Rating]:::target
     end
+    style Environment fill:none,stroke:#94A3B8,stroke-width:2px,stroke-dasharray: 5 5
 
     %% 6. Deployment / UI
     subgraph Deployment ["🌐 6. Deployment & Dashboard"]
-        I & J --> P[[FastAPI Backend<br/>api.py]]:::output
-        O --> P
-        P <--> Q{{Interactive Dashboard<br/>Live Job Prediction}}:::UI
-        Q --> R[Multilingual Job Report<br/>PDF Export]:::UI
+        I & J -->|Model Weights| P[[FastAPI Web Backend<br/>api.py Deployment]]:::output
+        O -->|Evaluation Logic| P
+        P <-->|REST API / JSON| Q{{Interactive Dashboard<br/>Live Job Prediction}}:::UI
+        Q -->|Generate Report| R[Multilingual Job Report<br/>Export to PDF File]:::UI
     end
+    style Deployment fill:none,stroke:#94A3B8,stroke-width:2px,stroke-dasharray: 5 5
 ```
 
 ---
