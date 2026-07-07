@@ -153,7 +153,7 @@ Bin-packing score identifies opportunities to co-schedule small jobs on shared n
 
 ---
 
-## 🔬 The AlpaRodh Coefficient (ηα)
+## 🔬 The AlpaRodh Coefficient ($\eta_\alpha$)
 
 A novel metric measuring *environmental return on optimization*:
 
