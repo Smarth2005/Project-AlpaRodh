@@ -205,6 +205,10 @@ Project-AlpaRodh/
 ├── .github/workflows/
 │   └── python-app.yml          # CI/CD — pytest on every push
 │
+├── assets/                     # README Media
+│   ├── banner.svg
+│   └── system_architecture.svg       
+│
 ├── data/
 │   └── job_table.parquet       # PM100 dataset (231,238 records)
 │
@@ -230,9 +234,12 @@ Project-AlpaRodh/
 ├── models/                     # Saved ML models (.pkl) & comparison CSVs
 ├── tests/                      # pytest unit test suite (4 modules)
 │
+├── .gitignore                  # Git ignored files configuration
 ├── Dockerfile                  # Production Docker image
-├── requirements.txt            # Python dependencies
-└── README.md                   # Detailed system document
+├── LICENSE                     # MIT License
+├── README.md                   # Detailed system document
+├── literature_review.md        # Model selection justification
+└── requirements.txt            # Python dependencies
 ```
 
 ---
