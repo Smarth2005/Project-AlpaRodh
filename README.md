@@ -2,27 +2,20 @@
 
 <img src="assets/banner.svg" width="100%"/>
 
-<br/>
+*"The greenest supercomputer is not the one built with the newest silicon, <br/>but the one that wastes the least of what it already has."*
 
-> *"The greenest supercomputer is not the one built with the newest silicon, <br/>but the one that wastes the least of what it already has."*
-
-<br/>
 
 [![Typing SVG](https://readme-typing-svg.herokuapp.com?font=Inter&weight=600&size=20&pause=1000&color=047857&center=true&vCenter=true&width=600&lines=AI-Driven+Variable+Resistance+Reduction;Optimizing+India's+PARAM+Yuva-II;Translating+Compute+Waste+into+Green+Scores)](https://git.io/typing-svg)
 
-[![Python](https://img.shields.io/badge/Python-3.10%2B-06D6A0?style=for-the-badge&logo=python&logoColor=white&labelColor=0A0E1A)](https://python.org)
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.104%2B-06D6A0?style=for-the-badge&logo=fastapi&logoColor=white&labelColor=0A0E1A)](https://fastapi.tiangolo.com)
-[![Docker](https://img.shields.io/badge/Docker-Ready-06D6A0?style=for-the-badge&logo=docker&logoColor=white&labelColor=0A0E1A)](https://docker.com)
-[![License](https://img.shields.io/badge/License-MIT-06D6A0?style=for-the-badge&labelColor=0A0E1A)](LICENSE)
-[![CI](https://img.shields.io/github/actions/workflow/status/Smarth2005/Project-AlpaRodh/python-app.yml?style=for-the-badge&label=CI&logo=github-actions&color=06D6A0&labelColor=0A0E1A)](https://github.com/Smarth2005/Project-AlpaRodh/actions)
 
-<br/>
+[![Python](https://img.shields.io/badge/Python-3.10%2B-brightgreen?style=for-the-badge&logo=python&logoColor=white&labelColor=0A0E1A)](https://python.org)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.104%2B-brightgreen?style=for-the-badge&logo=fastapi&logoColor=white&labelColor=0A0E1A)](https://fastapi.tiangolo.com)
+[![Docker](https://img.shields.io/badge/Docker-Ready-brightgreen?style=for-the-badge&logo=docker&logoColor=white&labelColor=0A0E1A)](https://docker.com)
+[![License](https://img.shields.io/badge/License-MIT-brightgreen?style=for-the-badge&labelColor=0A0E1A)](LICENSE)
 
-> **Supercomputers waste electricity every second.** Not because they're doing too much — but because they're doing too little with what they've been given. AlpaRodh identifies and eliminates this hidden waste using AI, before it happens.
 
-<br/>
 
-[🚀 Live Demo](https://project-alparodh.onrender.com) &nbsp;·&nbsp; [📊 Dashboard](https://project-alparodh.onrender.com) &nbsp;·&nbsp; [📖 Docs](#-architecture) &nbsp;·&nbsp; [🐛 Issues](https://github.com/Smarth2005/Project-AlpaRodh/issues)
+Supercomputers waste electricity every second. Not because they're doing too much— but because they're doing too little with what they've been given. AlpaRodh identifies and eliminates this hidden waste using AI, before it happens.
 
 </div>
 
@@ -40,22 +33,22 @@ Job Request:  ████████████████░░░░░░
 
 At India's PARAM Yuva-II scale, this waste costs **kilowatt-hours of electricity and kilograms of CO₂** every day — on a grid that's **3.13× more carbon-intensive** than the European systems where most HPC research originates.
 
----
 
-## 🎯 What AlpaRodh Does
 
-AlpaRodh is an end-to-end AI framework that:
+## 🏗️ Architecture
 
-| Step | What Happens |
-|------|-------------|
-| 📥 **Ingest** | Loads 231,238 job telemetry records from the PM100 (Marconi100) supercomputer |
-| 🧮 **Baseline** | Calculates total energy consumption, separating static vs. variable resistance |
-| 🔍 **Detect** | Identifies 34,681 over-allocated jobs (14.99% of all jobs) |
-| 🤖 **Predict** | 97.4%-accurate AI classifier flags wasteful jobs *before they run* |
-| ⚡ **Optimize** | Applies Core-Park, DVFS, and Consolidation strategies |
-| 🌿 **Quantify** | Translates savings into CO₂, trees, driving km, and phone charges |
-| 🇮🇳 **Map** | Projects results onto PARAM Yuva-II (CDAC Pune) with India's grid factor |
-| 📊 **Visualize** | Interactive multilingual dashboard with live AI predictions |
+<div align="center">
+  <img src="assets/system_architecture.svg" alt="AlpaRodh System Architecture" width="100%"/>
+</div>
+
+### PARAM Yuva-II — Target System (CDAC Pune)
+
+| Component | CPU Nodes | GPU Nodes |
+|-----------|-----------|-----------|
+| **CPU** | Intel Xeon E5-2670 (8-core) | Intel Xeon E5-2650 (8-core) |
+| **GPU** | — | NVIDIA Tesla M2090 |
+| **Node Count** | 340 | 36 |
+| **Grid CO₂** | 720 gCO₂/kWh | (India grid factor) |
 
 ---
 
@@ -79,38 +72,23 @@ AlpaRodh is an end-to-end AI framework that:
 
 ---
 
-## 🏗️ Architecture
-
-<div align="center">
-  <img src="assets/system_architecture.svg" alt="AlpaRodh System Architecture" width="100%"/>
-</div>
-
-### PARAM Yuva-II — Target System (CDAC Pune)
-
-| Component | CPU Nodes | GPU Nodes |
-|-----------|-----------|-----------|
-| **CPU** | Intel Xeon E5-2670 (8-core) | Intel Xeon E5-2650 (8-core) |
-| **GPU** | — | NVIDIA Tesla M2090 |
-| **Node Count** | 340 | 36 |
-| **Grid CO₂** | 720 gCO₂/kWh | (India grid factor) |
-
----
-
 ## 🤖 AI/ML Engine & TOPSIS Evaluation
 
 AlpaRodh trains and rigorously compares **12 models** using TOPSIS (Technique for Order of Preference by Similarity to Ideal Solution) multi-criteria decision-making. 
 
-### Dataset Features & Feature Engineering
+### 🔬 Dataset & Feature Engineering
 
-The original PM100 dataset provides the following raw telemetry columns:
-*   `node_power_consumption`, `cpu_power_consumption`, `mem_power_consumption`
-*   `num_cores_req` (cores requested), `num_cores_alloc` (cores allocated)
-*   `run_time`, `num_gpus_alloc`
+**Raw Telemetry (PM100 Dataset):**
+- **Power:** `node_power_consumption`, `cpu_power_consumption`, `mem_power_consumption`
+- **Allocation:** `num_cores_req` (requested), `num_cores_alloc` (allocated), `num_gpus_alloc`
+- **Execution:** `run_time`
 
-**⚠️ Data Leakage Prevention:**
-To prevent the Waste Classifier from simply doing basic math (`alloc > req`) and achieving trivial 100% accuracy, we heavily restrict its features.
-- **Features for Classifier:** `node_pwr_w`, `cpu_pwr_w`, `mem_pwr_w`, `cpu_to_node_ratio`, `mem_to_cpu_ratio`, `power_per_core`, `run_time`, `log_run_time`, `num_gpus_alloc`. *(No core allocation data is provided).*
-- **Features for Regressor:** Uses all of the above, PLUS `num_cores_req`, `num_cores_alloc`, `core_mismatch`, and `mismatch_ratio` to accurately forecast total energy (`energy_wh`).
+> [!WARNING]
+> **Data Leakage Prevention:** To prevent the Waste Classifier from simply doing basic math (`alloc > req`) and achieving a trivial 100% accuracy, we strictly masked all core allocation data.
+
+**Engineered Feature Sets:**
+- **Waste Classifier (Restricted):** `node_pwr_w`, `cpu_pwr_w`, `mem_pwr_w`, `cpu_to_node_ratio`, `mem_to_cpu_ratio`, `power_per_core`, `run_time`, `log_run_time`, `num_gpus_alloc`.
+- **Energy Regressor (Full Access):** Uses all classifier features, plus `num_cores_req`, `num_cores_alloc`, `core_mismatch`, and `mismatch_ratio` to accurately forecast total dynamic `energy_wh`.
 
 ### TABLE I: Waste Classifier TOPSIS Comparison (Classification)
 Target: *Predict if a job is wasteful (1) or efficient (0) before it runs.*
@@ -157,17 +135,17 @@ run_time           ████                              4.23%
 
 ## ⚙️ Optimization Strategies
 
-### 1. 🅿️ Core-Park
+### 1. Core-Park
 Power-gate idle cores in over-allocated jobs. When a job requests 10 but gets 32 cores, AlpaRodh triggers hardware power-gating on the 22 idle cores.
 - **Savings:** 37.21 kWh (2.96% of baseline)
 - **Applicable to:** 34,681 jobs (14.99%)
 
-### 2. ⚡ DVFS — Dynamic Voltage & Frequency Scaling
+### 2. DVFS (Dynamic Voltage & Frequency Scaling)
 For memory-bound workloads, CPU frequency can be lowered with minimal performance impact but significant power reduction (~12% per job).
 - **Savings:** 5.12 kWh (0.41%)
 - **Applicable to:** 45,230 memory-bound jobs
 
-### 3. 📦 Job Consolidation
+### 3. Job Consolidation
 Bin-packing score identifies opportunities to co-schedule small jobs on shared nodes, eliminating half-empty node waste.
 - **Consolidation Score:** 0.1499
 - **Potential additional savings:** 18.86 kWh
@@ -184,7 +162,8 @@ Every job analyzed receives an environmental grade:
 | **B** 🔵 | ≤ 1.0 g | Good | Monitor trends |
 | **C** 🟡 | ≤ 2.0 g | Average | Review core allocation |
 | **D** 🟠 | ≤ 5.0 g | Below Average | Apply Core-Park |
-| **F** 🔴 | > 5.0 g | Poor | Priority optimization target |
+| **E** 🔴 | ≤ 10.0 g | Poor | Priority optimization target |
+| **F** ⚫ | > 10.0 g | Critical | Halt and redesign |
 
 ---
 
@@ -193,13 +172,13 @@ Every job analyzed receives an environmental grade:
 ```
 Project-AlpaRodh/
 │
-├── 📂 .github/workflows/
+├── .github/workflows/
 │   └── python-app.yml          # CI/CD — pytest on every push
 │
-├── 📂 data/
+├── data/
 │   └── job_table.parquet       # PM100 dataset (231,238 records)
 │
-├── 📂 src/                     # Core Python modules
+├── src/                     # Core Python modules
 │   ├── api.py                  # FastAPI backend + dashboard serving
 │   ├── config.py               # Hardware specs & thresholds
 │   ├── data_loader.py          # Data ingestion & cleaning
@@ -212,14 +191,14 @@ Project-AlpaRodh/
 │   ├── translator.py           # Multilingual explainer (EN/HI/MR)
 │   └── run_analysis.py         # Main pipeline orchestrator
 │
-├── 📂 dashboard/               # Interactive web dashboard
+├── dashboard/               # Interactive web dashboard
 │   ├── index.html              # Single-page application shell
 │   ├── app.js                  # Chart.js + live AI predictor
 │   ├── style.css               # Dark glassmorphism UI
 │   └── data.json               # Pre-computed analysis results
 │
-├── 📂 models/                  # Saved ML models (.pkl) & comparison CSVs
-├── 📂 tests/                   # pytest unit test suite (4 modules)
+├── models/                  # Saved ML models (.pkl) & comparison CSVs
+├── tests/                   # pytest unit test suite (4 modules)
 │
 ├── Dockerfile                  # Production Docker image
 ├── requirements.txt            # Python dependencies
@@ -304,13 +283,19 @@ The FastAPI backend exposes the following REST endpoints to serve the dashboard 
 
 ## 🖥️ Dashboard Features
 
+<div align="center">
+
+### ✨ TRY IT OUT! ✨
+
 | Feature | Description |
-|---------|-------------|
-| 📊 **4 Live Charts** | Energy comparison, feature importance, Green Score distribution, India vs Italy CO₂ |
-| 🤖 **Live AI Predictor** | Enter job parameters → instant AI prediction (Energy Wh + Waste classification) |
-| 📋 **Job Analysis Report** | Downloadable PDF with AI verdict, Green Score, carbon footprint & optimization recommendations |
-| 🌐 **3 Languages** | Switch English ↔ Hindi ↔ Marathi in real-time |
-| 📱 **Responsive** | Works on desktop and tablet |
+|:-------:|:------------|
+| **4 Live Charts** | Energy comparison, feature importance, Green Score distribution, India vs Italy CO₂ |
+| **Live AI Predictor** | Enter job parameters → instant AI prediction (Energy Wh + Waste classification) |
+| **Job Analysis Report** | Downloadable PDF with AI verdict, Green Score, footprint & recommendations |
+| **3 Languages** | Switch English ↔ Hindi ↔ Marathi in real-time |
+| **Responsive UI** | Seamless experience on both desktop and tablet |
+
+</div>
 
 ---
 
@@ -334,15 +319,31 @@ AlpaRodh uses PM100 (Marconi100, CINECA Italy) as a scientifically valid analogu
 
 A novel metric measuring *environmental return on optimization*:
 
-```
-         CO₂ Saved (g)
-ηα  =  ──────────────────   =  7.3241 gCO₂ per kWh optimized
-         Energy Saved (kWh)
-```
+$$
+\eta_\alpha = \frac{\text{CO}_2\text{ Saved (g)}}{\text{Energy Saved (kWh)}} = 7.3241 \text{ gCO}_2/\text{kWh optimized}
+$$
 
 This answers: *"For every 1 kWh of waste AlpaRodh eliminates, how much CO₂ is prevented?"*
 
-See [`literature_review.md`](literature_review.md) for model selection justification and [`system_architecture.md`](system_architecture.md) for the complete technical design.
+## 🧩 Core Modules Explained
+
+### `data_loader.py` & `baseline.py`
+The foundation of the pipeline. It ingests historical telemetry, isolating **static resistance** (idle power, fans) from **variable resistance** (dynamic CPU/GPU power draw). AlpaRodh's primary objective is eliminating unnecessary variable resistance caused by over-allocation.
+
+### `ai_predictor.py` & `topsis.py`
+Instead of relying on a single algorithm, AlpaRodh trains an ensemble of 6 classifiers and 6 regressors. It then utilizes **TOPSIS (Technique for Order of Preference by Similarity to Ideal Solution)** to mathematically rank the models based on a blend of accuracy, precision, F1-score, and computational overhead.
+
+### `param_mapper.py`
+Since AlpaRodh specifically targets CDAC Pune's **PARAM Yuva-II**, this module applies a calculated scaling factor (0.6054) to map the PM100 data to the PARAM architecture, considering differences in total nodes, core counts, and GPU presence.
+
+### `optimizer.py`
+The execution arm of the framework, applying three specific hardware-level strategies (Core-Park, DVFS, Consolidation).
+
+### `carbon_footprint.py`
+Translates raw kWh savings into tangible environmental metrics. Crucially, it applies the **India Grid Carbon Factor (720 gCO₂/kWh)**, highlighting why saving power in India is >3x more environmentally impactful than saving power on European grids.
+
+### `api.py` & `dashboard/`
+The bridge between theoretical analysis and real-world interaction. The FastAPI backend serves the pre-trained ML models, allowing users to enter custom job parameters into the interactive web dashboard and receive instantaneous AI predictions and Green Score certifications.
 
 ---
 
