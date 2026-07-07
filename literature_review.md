@@ -1,12 +1,6 @@
 # Literature Review — Model Selection Justification for AlpaRodh
 
-## Context
 
-AlpaRodh uses machine learning to predict energy waste in High-Performance Computing (HPC) jobs using the PM100 (Marconi100) telemetry dataset from CINECA, Italy. The dataset contains ~231K job records with tabular features: power consumption (node, CPU, memory), core allocation, runtime, and GPU usage.
-
-This review justifies the selection of 6 classification and 6 regression models for comparative analysis.
-
----
 
 ## 1. Nature of the Data: Tabular, Not Sequential
 
