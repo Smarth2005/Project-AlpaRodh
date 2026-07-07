@@ -71,12 +71,12 @@ AlpaRodh uses PM100 (Marconi100, CINECA Italy) as a scientifically valid analogu
 
 ## 🗃️ Dataset & Feature Engineering
 
-**Raw Telemetry (PM100 Dataset): https://zenodo.org/records/10127767**
-
-**Columns in the Dataset:**
+AlpaRodh uses machine learning to predict energy waste in High-Performance Computing (HPC) jobs using the PM100 (Marconi100) telemetry dataset from CINECA, Italy. The dataset contains ~231K job records with tabular features:
 - **Power:** `node_power_consumption`, `cpu_power_consumption`, `mem_power_consumption`
 - **Allocation:** `num_cores_req` (requested), `num_cores_alloc` (allocated), `num_gpus_alloc`
 - **Execution:** `run_time`
+
+Dataset Link: https://zenodo.org/records/10127767
 
 > [!WARNING]
 > **Data Leakage Prevention:** To prevent the Waste Classifier from simply doing basic math (`alloc > req`) and achieving a trivial 100% accuracy, we strictly masked all core allocation data.
@@ -91,7 +91,7 @@ AlpaRodh uses PM100 (Marconi100, CINECA Italy) as a scientifically valid analogu
 
 ## 🧠 Predictive Modeling using Machine Learning
 
-AlpaRodh trains and rigorously compares 6 regressors and 6 classifiers using TOPSIS (Technique for Order of Preference by Similarity to Ideal Solution) multi-criteria decision-making. 
+AlpaRodh trains and rigorously compares 6 regressors and 6 classifiers using TOPSIS (Technique for Order of Preference by Similarity to Ideal Solution) multi-criteria decision-making. literature_review.md  justifies the selection of 6 classification and 6 regression models for comparative analysis.
 
 ### TABLE I: Waste Classifier TOPSIS Comparison (Classification)
 Target: *Predict if a job is wasteful (1) or efficient (0) before it runs.*
